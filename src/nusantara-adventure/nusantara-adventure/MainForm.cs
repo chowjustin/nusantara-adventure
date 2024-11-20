@@ -6,32 +6,47 @@ namespace nusantara_adventure
         private System.Windows.Forms.Timer gameTimer;
         private int moveX = 0, moveY = 0;
         private bool jumpRequested = false;
+        private Button restartButton;
 
         public MainForm()
         {
             InitializeComponent();
             InitializeGame();
+            InitializeRestartButton();
         }
+        private void InitializeRestartButton()
+        {
+            restartButton = new Button
+            {
+                Text = "Restart Game",
+                Visible = false,
+                Location = new Point(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2 + 50),
+                Size = new Size(100, 30)
+            };
+            restartButton.Click += RestartGame;
+            this.Controls.Add(restartButton);
+        }
+
+       private void RestartGame(object sender, EventArgs e)
+       {
+            this.Controls.Clear();
+
+            InitializeGame();
+            InitializeRestartButton();
+
+            Invalidate();
+       }
+
 
         private void InitializeGame()
         {
-            Level level1 = new Level(1);
-            Level level2 = new Level(2);
-
-            Player player = new Player("Justin", 0, 0, 100, 5);
-
+            Player player = new Player("Justin", 0, 690, 100, 5);
             // Add some initial items or costumes if needed
             player.AddCostume(new Costume("Default", "Starting costume"));
 
             gameWorld = new GameWorld(player);
 
-            if (level1.LevelNumber == 1)
-            {
-                GenerateDynamicEnemies(level1);
-            }
-
-            gameWorld.AddLevel(level1);
-            gameWorld.AddLevel(level2);
+            gameWorld.StartGame();
 
             gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60 FPS
             gameTimer.Tick += GameLoop;
@@ -43,6 +58,13 @@ namespace nusantara_adventure
 
         private void GameLoop(object sender, EventArgs e)
         {
+            // Check for game over condition
+            if (gameWorld.Player.Health <= 0)
+            {
+                GameOver();
+                return;
+            }
+
             int verticalInput = 0;
             if (jumpRequested)
             {
@@ -52,52 +74,30 @@ namespace nusantara_adventure
 
             gameWorld.Player.Move(moveX, verticalInput);
             gameWorld.Player.Update(); // Important: call Update for gravity
+
             Level currentLevel = gameWorld.GetCurrentLevel();
             foreach (var enemy in currentLevel.Enemies)
             {
                 enemy.Update();
             }
+
             gameWorld.Update();
             Invalidate();
         }
 
-        private void GenerateDynamicEnemies(Level level)
+
+        private void GameOver()
         {
-            // Random number of enemies between 4 and 5
-            Random random = new Random();
-            int enemyCount = random.Next(4, 6);
+            // Stop the game timer
+            gameTimer.Stop();
 
-            // Enemy types to choose from
-            string[] enemyTypes = {
-        "Goomba", "Koopa", "Piranha", "Hammer Bro", "Bowser Jr"
-    };
+            // Show restart button
+            restartButton.Visible = true;
 
-            for (int i = 0; i < enemyCount; i++)
-            {
-                // Randomly select enemy type
-                string enemyType = enemyTypes[random.Next(enemyTypes.Length)];
-
-                // Dynamic enemy attributes
-                int x = random.Next(200, 1000);  // Random x position
-                int health = random.Next(20, 51);  // Random health between 20-50
-                int speed = random.Next(1, 4);  // Random speed between 1-3
-                int damage = random.Next(10, 31);  // Random damage between 10-30
-                int defaultRight = random.Next(2);
-
-                // Create and add enemy to level
-                Enemy enemy = new Enemy(
-                    $"{enemyType}{i + 1}",
-                    x: x,
-                    y: 0,
-                    health: health,
-                    speed: speed,
-                    damage: damage,
-                    defaultRight: defaultRight == 1
-                );
-
-                level.AddEnemy(enemy);
-            }
+            // Trigger a repaint to show final state
+            Invalidate();
         }
+
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -129,7 +129,6 @@ namespace nusantara_adventure
                     break;
             }
         }
-
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -150,7 +149,22 @@ namespace nusantara_adventure
             g.DrawString($"Health: {player.Health}", new Font("Arial", 12), Brushes.White, 10, 10);
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
             g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 50);
+
+            // Game Over text if player health is 0
+            if (player.Health <= 0)
+            {
+                string gameOverText = "GAME OVER";
+                SizeF textSize = g.MeasureString(gameOverText, new Font("Arial", 24, FontStyle.Bold));
+                g.DrawString(
+                    gameOverText,
+                    new Font("Arial", 24, FontStyle.Bold),
+                    Brushes.Red,
+                    (this.ClientSize.Width - textSize.Width) / 2,
+                    this.ClientSize.Height / 2
+                );
+            }
         }
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {

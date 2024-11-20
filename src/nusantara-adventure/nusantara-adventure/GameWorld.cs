@@ -10,11 +10,6 @@ namespace nusantara_adventure
         public Player Player { get; set; }
         public int CurrentLevelIndex { get; set; }
 
-        // New properties to support game state
-        public List<Enemy> Enemies { get; private set; }
-        public List<Item> Items { get; private set; }
-        public List<Trap> Traps { get; private set; }
-
         public GameWorld(Player player)
         {
             Player = player;
@@ -29,8 +24,53 @@ namespace nusantara_adventure
 
         public void StartGame()
         {
+            Level level1 = new Level(1);
+            Level level2 = new Level(2);
+
+            AddLevel(level1);
+            AddLevel(level2);
+
             CurrentLevelIndex = 0;
+
             LoadCurrentLevel();
+        }
+
+        private void GenerateDynamicEnemies(Level level)
+        {
+            // Random number of enemies between 4 and 5
+            Random random = new Random();
+            int enemyCount = random.Next(4, 6);
+
+            // Enemy types to choose from
+            string[] enemyTypes = {
+        "Goomba", "Koopa", "Piranha", "Hammer Bro", "Bowser Jr"
+    };
+
+            for (int i = 0; i < enemyCount; i++)
+            {
+                // Randomly select enemy type
+                string enemyType = enemyTypes[random.Next(enemyTypes.Length)];
+
+                // Dynamic enemy attributes
+                int x = random.Next(200, 1000);  // Random x position
+                int health = random.Next(20, 51);  // Random health between 20-50
+                int speed = random.Next(1, 4);  // Random speed between 1-3
+                int damage = random.Next(10, 31);  // Random damage between 10-30
+                int defaultRight = random.Next(2);
+
+                // Create and add enemy to level
+                Enemy enemy = new Enemy(
+                    $"{enemyType}{i + 1}",
+                    x: x,
+                    y: 690,
+                    health: health,
+                    speed: speed,
+                    damage: damage,
+                    defaultRight: defaultRight == 1
+                );
+
+                level.AddEnemy(enemy);
+            }
         }
 
         public void StartLevel(int index)
@@ -46,16 +86,9 @@ namespace nusantara_adventure
 
         public void LoadCurrentLevel()
         {
-            // Clear existing game objects
-            Enemies.Clear();
-            Items.Clear();
-            Traps.Clear();
-
-            // Load current level's objects
             var currentLevel = Levels[CurrentLevelIndex];
-            Enemies.AddRange(currentLevel.Enemies);
-            Items.AddRange(currentLevel.Items);
-            Traps.AddRange(currentLevel.Traps);
+
+            GenerateDynamicEnemies(currentLevel);
         }
 
         public void CompleteCurrentLevel()

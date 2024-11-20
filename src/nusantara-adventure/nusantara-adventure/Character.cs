@@ -7,7 +7,7 @@ namespace nusantara_adventure
         public int Health { get; set; }
         public int Speed { get; set; }
         public Level CurrentLevel { get; set; }
-        public float VerticalVelocity { get; protected set; }
+        public float VerticalVelocity { get; set; }
         public bool IsGrounded { get; protected set; }
         protected const float GRAVITY = 0.5f;
         protected const float JUMP_STRENGTH = -10f;
