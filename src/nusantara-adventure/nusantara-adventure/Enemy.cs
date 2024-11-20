@@ -8,8 +8,8 @@ namespace nusantara_adventure
         private int initialX;
         private bool isMovingRight = true;  // Direction flag for horizontal movement
 
-        public Enemy(string name, int x, int y, int health, int speed, int damage, bool defaultRight)
-            : base(name, x, y, health, speed)
+        public Enemy(string name, int x, int y, int health, int speed, int damage, bool defaultRight, int width, int height)
+            : base(name, x, y, health, speed, width, height)
         {
             Damage = damage;
             initialX = x; // Store the original X position

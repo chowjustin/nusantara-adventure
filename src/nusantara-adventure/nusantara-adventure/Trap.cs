@@ -10,8 +10,8 @@ namespace nusantara_adventure
     {
         public int Damage { get; set; }
 
-        public Trap(string name, int x, int y, int damage)
-            : base(name, x, y)
+        public Trap(string name, int x, int y, int damage, int width, int height)
+            : base(name, x, y, width, height)
         {
             Damage = damage;
         }

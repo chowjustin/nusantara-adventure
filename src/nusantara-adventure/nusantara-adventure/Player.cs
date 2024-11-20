@@ -8,8 +8,8 @@ namespace nusantara_adventure
         public Costume CurrentCostume { get; set; }
         public List<Costume> OwnedCostumes { get; set; }
 
-        public Player(string name, int x, int y, int health, int speed)
-            : base(name, x, y, health, speed)
+        public Player(string name, int x, int y, int health, int speed, int width, int height)
+            : base(name, x, y, health, speed, width, height)
         {
             OwnedCostumes = new List<Costume>();
         }

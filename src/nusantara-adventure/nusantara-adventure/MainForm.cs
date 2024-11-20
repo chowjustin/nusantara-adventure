@@ -1,3 +1,5 @@
+using System;
+
 namespace nusantara_adventure
 {
     public partial class MainForm : Form
@@ -43,7 +45,7 @@ namespace nusantara_adventure
 
             this.Size = new Size(1200, 800);
 
-            Player player = new Player("Justin", 0, 690, 100, 5);
+            Player player = new Player("Justin", 0, 690, 100, 5, 32, 32);
             // Add some initial items or costumes if needed
             player.AddCostume(new Costume("Default", "Starting costume"));
 
@@ -148,6 +150,12 @@ namespace nusantara_adventure
                 g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X, enemy.Y - 15);
             }
 
+            foreach (var trap in currentLevel.Traps)
+            {
+                g.FillRectangle(Brushes.Yellow, trap.X, trap.Y, trap.Width, trap.Height);
+                g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X, trap.Y - 15);
+            }
+
             // Draw HUD
             g.DrawString($"Health: {player.Health}", new Font("Arial", 12), Brushes.White, 10, 10);
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
@@ -167,7 +175,6 @@ namespace nusantara_adventure
                 );
             }
         }
-
 
         private void MainForm_Load(object sender, EventArgs e)
         {

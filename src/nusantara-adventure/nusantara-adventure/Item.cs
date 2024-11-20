@@ -13,8 +13,8 @@ namespace nusantara_adventure
         public int SpeedBoost { get; set; }
         public bool IsCollected { get; set; }
 
-        public Item(string name, int x, int y, int value, int healthBoost, int speedBoost)
-            : base(name, x, y)
+        public Item(string name, int x, int y, int value, int healthBoost, int speedBoost, int width, int height)
+            : base(name, x, y, width, height)
         {
             Value = value;
             HealthBoost = healthBoost;

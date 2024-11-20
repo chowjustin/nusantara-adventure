@@ -14,11 +14,13 @@ namespace nusantara_adventure
         public int Width { get; set; } = 32;  // Default size
         public int Height { get; set; } = 32; // Default size
 
-        public GameObject(string name, int x, int y)
+        public GameObject(string name, int x, int y, int width, int height)
         {
             Name = name;
             X = x;
             Y = y;
+            Width = width;
+            Height = height;
         }
 
         public virtual void Update()
