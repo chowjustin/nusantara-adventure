@@ -112,6 +112,8 @@ namespace nusantara_adventure
             CheckItemCollections(currentLevel);
             CheckTrapCollisions(currentLevel);
 
+            CheckTopCollisions(currentLevel);
+
             // Remove defeated enemies
             currentLevel.Enemies.RemoveAll(e => e.Health <= 0);
             currentLevel.Items.RemoveAll(i => i.IsCollected);
@@ -121,6 +123,11 @@ namespace nusantara_adventure
         {
             foreach (var enemy in currentLevel.Enemies.ToList())
             {
+                if (IsTopCollision(Player, enemy))
+                {
+                    continue;
+                }
+
                 if (IsColliding(Player, enemy))
                 {
                     enemy.Attack(Player);
@@ -158,5 +165,46 @@ namespace nusantara_adventure
                    obj1.Y < obj2.Y + obj2.Height &&
                    obj1.Y + obj1.Height > obj2.Y;
         }
+
+        private void CheckTopCollisions(Level currentLevel)
+        {
+            foreach (var enemy in currentLevel.Enemies.ToList())
+            {
+                if (IsTopCollision(Player, enemy))
+                {
+                    // Player "jumps" after colliding with the top of an enemy
+                    //Player.Jump();
+
+                    // Enemy takes damage or dies
+                    //enemy.TakeDamage(Player.Score); // Or apply a fixed damage value
+                    //if (enemy.Health <= 0)
+                    //{
+                    //enemy.Die();
+                    //}
+                    enemy.TakeDamage(0);
+
+                    currentLevel.Enemies.Remove(enemy);
+                }
+
+            }
+        }
+
+        private bool IsTopCollision(Player player, Enemy enemy)
+        {
+            //Check if the player's bottom collides with the enemy's top
+            // Check if the player's bottom overlaps with the enemy's top
+            bool isVerticallyAligned = player.Y + player.Height >= enemy.Y &&
+                                       player.Y + player.Height <= enemy.Y + enemy.Height / 2;
+
+            // Check if the player and enemy horizontally overlap
+            bool isHorizontallyAligned = player.X < enemy.X + enemy.Width &&
+                                         player.X + player.Width > enemy.X;
+
+            return isVerticallyAligned && isHorizontallyAligned;
+
+        }
+
+
     }
+
 }

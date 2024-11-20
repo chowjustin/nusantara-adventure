@@ -40,6 +40,9 @@ namespace nusantara_adventure
 
         private void InitializeGame()
         {
+
+            this.Size = new Size(1200, 800);
+
             Player player = new Player("Justin", 0, 690, 100, 5);
             // Add some initial items or costumes if needed
             player.AddCostume(new Costume("Default", "Starting costume"));
