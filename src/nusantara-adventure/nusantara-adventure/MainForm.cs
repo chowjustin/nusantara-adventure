@@ -1,5 +1,5 @@
-namespace nusantara_adventure
-{
+    namespace nusantara_adventure
+    {
     public partial class MainForm : Form
     {
         private GameWorld gameWorld;
@@ -7,6 +7,7 @@ namespace nusantara_adventure
         private int moveX = 0, moveY = 0;
         private bool jumpRequested = false;
         private Button restartButton;
+        private int worldOffset = 0;
 
         public MainForm()
         {
@@ -27,21 +28,24 @@ namespace nusantara_adventure
             this.Controls.Add(restartButton);
         }
 
-       private void RestartGame(object sender, EventArgs e)
-       {
+        private void RestartGame(object sender, EventArgs e)
+        {
             this.Controls.Clear();
 
             InitializeGame();
             InitializeRestartButton();
 
             Invalidate();
-       }
+        }
 
 
         private void InitializeGame()
         {
 
             this.Size = new Size(1200, 800);
+            this.MaximumSize = this.Size; // Prevent resizing
+            this.MinimumSize = this.Size;
+            this.BackColor = Color.LightBlue;
 
             Player player = new Player("Justin", 0, 690, 100, 5);
             // Add some initial items or costumes if needed
@@ -78,11 +82,34 @@ namespace nusantara_adventure
             gameWorld.Player.Move(moveX, verticalInput);
             gameWorld.Player.Update(); // Important: call Update for gravity
 
+            int halfFormWidth = this.ClientSize.Width / 2;
+            int scrollSpeed = gameWorld.Player.Speed;
+
             Level currentLevel = gameWorld.GetCurrentLevel();
-            foreach (var enemy in currentLevel.Enemies)
+            if (moveX > 0 && gameWorld.Player.X >= halfFormWidth)
             {
-                enemy.Update();
+                // Player stays at the center, and world elements scroll left
+                gameWorld.Player.X = halfFormWidth;
+                worldOffset -= scrollSpeed;
+
+                foreach (var enemy in currentLevel.Enemies)
+                {
+                    enemy.X -= scrollSpeed;
+                    enemy.Update();
+                }
             }
+  
+            else
+            {
+                // Normal player movement when not scrolling
+                gameWorld.Player.X += moveX ;
+
+                foreach (var enemy in currentLevel.Enemies)
+                {
+                    enemy.Update();
+                }
+            }
+
 
             gameWorld.Update();
             Invalidate();
@@ -168,6 +195,7 @@ namespace nusantara_adventure
             }
         }
 
+     
 
         private void MainForm_Load(object sender, EventArgs e)
         {
