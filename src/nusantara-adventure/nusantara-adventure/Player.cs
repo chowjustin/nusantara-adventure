@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace nusantara_adventure
 {
     internal class Player : Character
@@ -46,9 +42,15 @@ namespace nusantara_adventure
             }
         }
 
-        public override void Update()
+        public void Move(int horizontalInput, int verticalInput)
         {
-            // Update player-specific logic
+            // Horizontal movement
+            X += horizontalInput * Speed;
+            // Jump logic
+            if (verticalInput < 0 && IsGrounded)
+            {
+                Jump();
+            }
         }
 
         public void Attack(Enemy enemy)
