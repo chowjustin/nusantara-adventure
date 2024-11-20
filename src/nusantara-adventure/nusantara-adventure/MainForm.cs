@@ -1,5 +1,7 @@
-    namespace nusantara_adventure
-    {
+using System;
+
+namespace nusantara_adventure
+{
     public partial class MainForm : Form
     {
         private GameWorld gameWorld;
@@ -47,7 +49,7 @@
             this.MinimumSize = this.Size;
             this.BackColor = Color.LightBlue;
 
-            Player player = new Player("Justin", 0, 690, 100, 5);
+            Player player = new Player("Justin", 0, 690, 100, 5, 32, 32);
             // Add some initial items or costumes if needed
             player.AddCostume(new Costume("Default", "Starting costume"));
 
@@ -173,6 +175,12 @@
             {
                 g.FillRectangle(Brushes.Red, enemy.X, enemy.Y, enemy.Width, enemy.Height);
                 g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X, enemy.Y - 15);
+            }
+
+            foreach (var trap in currentLevel.Traps)
+            {
+                g.FillRectangle(Brushes.Yellow, trap.X, trap.Y, trap.Width, trap.Height);
+                g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X, trap.Y - 15);
             }
 
             // Draw HUD

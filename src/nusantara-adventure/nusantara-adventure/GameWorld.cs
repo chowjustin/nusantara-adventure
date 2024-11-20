@@ -57,6 +57,8 @@ namespace nusantara_adventure
                 int speed = random.Next(1, 4);  // Random speed between 1-3
                 int damage = random.Next(10, 31);  // Random damage between 10-30
                 int defaultRight = random.Next(2);
+                int width = random.Next(32, 40);
+                int height = random.Next(32, 40);
 
                 // Create and add enemy to level
                 Enemy enemy = new Enemy(
@@ -66,12 +68,52 @@ namespace nusantara_adventure
                     health: health,
                     speed: speed,
                     damage: damage,
-                    defaultRight: defaultRight == 1
+                    defaultRight: defaultRight == 1,
+                    width: width,
+                    height: height
                 );
 
                 level.AddEnemy(enemy);
             }
         }
+
+        private void GenerateDynamicTraps(Level level)
+{
+    // Random number of traps between 2 and 4
+    Random random = new Random();
+    int trapCount = random.Next(2, 5);
+
+    // Trap types to choose from (for example, spike traps, fire traps, etc.)
+    string[] trapTypes = {
+        "Spikes", "Fire", "Pitfall"
+    };
+
+    for (int i = 0; i < trapCount; i++)
+    {
+        // Randomly select trap type
+        string trapType = trapTypes[random.Next(trapTypes.Length)];
+
+        // Dynamic trap attributes
+        int x = random.Next(300, 2000);  // Random x position
+                int damage = random.Next(10, 50);
+                int width = random.Next(50, 150);  // Random width between 50-150
+                int height = 20;
+
+
+                // Create and add trap to level
+                Trap trap = new Trap(
+            $"{trapType}{i + 1}",
+            x: x,
+            y: 690,
+            damage: damage,
+            width: width,
+            height: height
+        );
+
+        level.AddTrap(trap);
+    }
+}
+
 
         public void StartLevel(int index)
         {
@@ -89,6 +131,7 @@ namespace nusantara_adventure
             var currentLevel = Levels[CurrentLevelIndex];
 
             GenerateDynamicEnemies(currentLevel);
+            GenerateDynamicTraps(currentLevel);
         }
 
         public void CompleteCurrentLevel()

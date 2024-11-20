@@ -13,8 +13,8 @@ namespace nusantara_adventure
         protected const float JUMP_STRENGTH = -10f;
         protected const int GROUND_LEVEL = 700; // Adjust based on form height
 
-        public Character(string name, int x, int y, int health, int speed)
-            : base(name, x, y)
+        public Character(string name, int x, int y, int health, int speed, int width, int height)
+            : base(name, x, y, width, height)
         {
             Health = health;
             Speed = speed;
