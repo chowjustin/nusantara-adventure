@@ -10,6 +10,8 @@ namespace nusantara_adventure
         private bool jumpRequested = false;
         private Button restartButton;
         private int worldOffset = 0;
+        private const int SCROLL_THRESHOLD = 600;
+
 
         public MainForm()
         {
@@ -33,10 +35,9 @@ namespace nusantara_adventure
         private void RestartGame(object sender, EventArgs e)
         {
             this.Controls.Clear();
-
+            worldOffset = 0; 
             InitializeGame();
             InitializeRestartButton();
-
             Invalidate();
         }
 
@@ -57,7 +58,7 @@ namespace nusantara_adventure
 
             gameWorld.StartGame();
 
-            gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60 FPS
+                gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60 FPS
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
 
@@ -81,37 +82,23 @@ namespace nusantara_adventure
                 jumpRequested = false;
             }
 
-            gameWorld.Player.Move(moveX, verticalInput);
-            gameWorld.Player.Update(); // Important: call Update for gravity
+            int playerScreenPosition = gameWorld.Player.X - worldOffset;
+            if (playerScreenPosition > SCROLL_THRESHOLD)
+            {
+                // Scroll world to the left
+                worldOffset += playerScreenPosition - SCROLL_THRESHOLD;
+                gameWorld.Player.X = SCROLL_THRESHOLD + worldOffset;
+            }
 
-            int halfFormWidth = this.ClientSize.Width / 2;
-            int scrollSpeed = gameWorld.Player.Speed;
+            gameWorld.Player.Move(moveX, verticalInput);
+            gameWorld.Player.Update();
 
             Level currentLevel = gameWorld.GetCurrentLevel();
-            if (moveX > 0 && gameWorld.Player.X >= halfFormWidth)
+          
+            foreach (var enemy in currentLevel.Enemies)
             {
-                // Player stays at the center, and world elements scroll left
-                gameWorld.Player.X = halfFormWidth;
-                worldOffset -= scrollSpeed;
-
-                foreach (var enemy in currentLevel.Enemies)
-                {
-                    enemy.X -= scrollSpeed;
-                    enemy.Update();
-                }
+                enemy.Update();
             }
-  
-            else
-            {
-                // Normal player movement when not scrolling
-                gameWorld.Player.X += moveX ;
-
-                foreach (var enemy in currentLevel.Enemies)
-                {
-                    enemy.Update();
-                }
-            }
-
 
             gameWorld.Update();
             Invalidate();
@@ -168,19 +155,21 @@ namespace nusantara_adventure
             var player = gameWorld.Player;
 
             // Draw Player
-            g.FillRectangle(Brushes.Blue, player.X, player.Y, player.Width, player.Height);
+            g.FillRectangle(Brushes.Blue, player.X - worldOffset, player.Y, player.Width, player.Height);
 
             var currentLevel = gameWorld.GetCurrentLevel();
             foreach (var enemy in currentLevel.Enemies)
             {
-                g.FillRectangle(Brushes.Red, enemy.X, enemy.Y, enemy.Width, enemy.Height);
-                g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X, enemy.Y - 15);
+                // Draw enemies relative to world offset
+                g.FillRectangle(Brushes.Red, enemy.X - worldOffset, enemy.Y, enemy.Width, enemy.Height);
+                g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X - worldOffset, enemy.Y - 15);
             }
 
             foreach (var trap in currentLevel.Traps)
             {
-                g.FillRectangle(Brushes.Yellow, trap.X, trap.Y, trap.Width, trap.Height);
-                g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X, trap.Y - 15);
+                // Draw traps relative to world offset
+                g.FillRectangle(Brushes.Yellow, trap.X - worldOffset, trap.Y, trap.Width, trap.Height);
+                g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X - worldOffset, trap.Y - 15);
             }
 
             // Draw HUD

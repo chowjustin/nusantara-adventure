@@ -39,7 +39,7 @@ namespace nusantara_adventure
         {
             // Random number of enemies between 4 and 5
             Random random = new Random();
-            int enemyCount = random.Next(4, 6);
+            int enemyCount = random.Next(4, 12);
 
             // Enemy types to choose from
             string[] enemyTypes = {
@@ -52,7 +52,7 @@ namespace nusantara_adventure
                 string enemyType = enemyTypes[random.Next(enemyTypes.Length)];
 
                 // Dynamic enemy attributes
-                int x = random.Next(200, 1000);  // Random x position
+                int x = random.Next(200, 3000);  // Random x position
                 int health = random.Next(20, 51);  // Random health between 20-50
                 int speed = random.Next(1, 4);  // Random speed between 1-3
                 int damage = random.Next(10, 31);  // Random damage between 10-30
