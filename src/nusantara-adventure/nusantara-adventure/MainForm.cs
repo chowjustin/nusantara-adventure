@@ -12,6 +12,7 @@ namespace nusantara_adventure
         private Button restartButton;
         private int worldOffset = 0;
         private const int SCROLL_THRESHOLD = 600;
+        private Image platformImage;
 
 
         public MainForm()
@@ -19,6 +20,11 @@ namespace nusantara_adventure
             InitializeComponent();
             InitializeGame();
             InitializeRestartButton();
+
+            using (MemoryStream ms = new MemoryStream(Resource.platform))
+            {
+                platformImage = Image.FromStream(ms);
+            }
         }
         private void InitializeRestartButton()
         {
@@ -36,7 +42,7 @@ namespace nusantara_adventure
         private void RestartGame(object sender, EventArgs e)
         {
             this.Controls.Clear();
-            worldOffset = 0; 
+            worldOffset = 0;
             InitializeGame();
             InitializeRestartButton();
             Invalidate();
@@ -59,7 +65,7 @@ namespace nusantara_adventure
 
             gameWorld.StartGame();
 
-                gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60 FPS
+            gameTimer = new System.Windows.Forms.Timer { Interval = 16 }; // ~60 FPS
             gameTimer.Tick += GameLoop;
             gameTimer.Start();
 
@@ -100,11 +106,14 @@ namespace nusantara_adventure
                 gameWorld.Player.X = SCROLL_THRESHOLD + worldOffset;
             }
 
+            //gameWorld.Player.Move(moveX, verticalInput);
+            //gameWorld.Player.Update();
             gameWorld.Player.Move(moveX, verticalInput);
+            gameWorld.Player.Animate();  // Add this line to update animation
             gameWorld.Player.Update();
 
             Level currentLevel = gameWorld.GetCurrentLevel();
-          
+
             foreach (var enemy in currentLevel.Enemies)
             {
                 enemy.Update();
@@ -157,7 +166,7 @@ namespace nusantara_adventure
                     moveX = 0;
                     break;
             }
-        }
+        }     
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -165,7 +174,8 @@ namespace nusantara_adventure
             var player = gameWorld.Player;
 
             // Draw Player
-            g.FillRectangle(Brushes.Blue, player.X - worldOffset, player.Y, player.Width, player.Height);
+            //g.FillRectangle(Brushes.Blue, player.X - worldOffset, player.Y, player.Width, player.Height);
+            player.Draw(g, worldOffset);
 
             var currentLevel = gameWorld.GetCurrentLevel();
             foreach (var enemy in currentLevel.Enemies)
@@ -221,6 +231,11 @@ namespace nusantara_adventure
             g.DrawString($"Health: {player.Health}", new Font("Arial", 12), Brushes.White, 10, 10);
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
             g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 50);
+           
+            g.DrawImage(
+                platformImage,
+                new Rectangle(0, 700, 1200, 100)
+            );
 
             // Game Over text if player health is 0
             if (player.Health <= 0)
@@ -237,10 +252,12 @@ namespace nusantara_adventure
             }
         }
 
-     
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {
         }
+
+       
     }
 }
