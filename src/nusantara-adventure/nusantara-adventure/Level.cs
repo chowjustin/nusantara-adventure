@@ -13,6 +13,7 @@ namespace nusantara_adventure
         public List<Item> Items { get; set; }
         public List<Trap> Traps { get; set; }
         public bool IsCompleted { get; set; }
+        public List<Wall> Walls { get; private set; } = new List<Wall>();
 
         public Level(int levelNumber)
         {
@@ -35,6 +36,11 @@ namespace nusantara_adventure
         public void AddTrap(Trap trap)
         {
             Traps.Add(trap);
+        }
+
+        public void AddWall(Wall wall)
+        {
+            Walls.Add(wall);
         }
 
         public void StartLevel()

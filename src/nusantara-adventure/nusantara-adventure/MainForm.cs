@@ -1,4 +1,5 @@
 using System;
+using static nusantara_adventure.Wall;
 
 namespace nusantara_adventure
 {
@@ -80,6 +81,15 @@ namespace nusantara_adventure
             {
                 verticalInput = -1;
                 jumpRequested = false;
+            }
+
+            int minAllowedX = worldOffset;
+
+            // Prevent moving left of the world offset
+            if (moveX < 0 && gameWorld.Player.X <= minAllowedX)
+            {
+                moveX = 0;
+                gameWorld.Player.X = minAllowedX;
             }
 
             int playerScreenPosition = gameWorld.Player.X - worldOffset;
@@ -170,6 +180,41 @@ namespace nusantara_adventure
                 // Draw traps relative to world offset
                 g.FillRectangle(Brushes.Yellow, trap.X - worldOffset, trap.Y, trap.Width, trap.Height);
                 g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X - worldOffset, trap.Y - 15);
+            }
+
+            foreach (var wall in currentLevel.Walls)
+            {
+                // Choose color based on wall type
+                Brush wallBrush = wall.Type switch
+                {
+                    WallType.Regular => Brushes.Gray,
+                    WallType.Spiked => Brushes.DarkRed,
+                    _ => Brushes.Gray
+                };
+
+                // Draw wall relative to world offset
+                g.FillRectangle(wallBrush, wall.X - worldOffset, wall.Y, wall.Width, wall.Height);
+
+                // Draw spikes for spiked walls
+                if (wall.Type == WallType.Spiked)
+                {
+                    using (Pen spikePen = new Pen(Color.Red, 2))
+                    {
+                        int spikeCount = wall.Width / 10;
+                        for (int i = 0; i < spikeCount; i++)
+                        {
+                            int spikeX = wall.X - worldOffset + (i * 10);
+                            g.DrawLine(spikePen,
+                                spikeX, wall.Y,
+                                spikeX + 5, wall.Y - 5
+                            );
+                            g.DrawLine(spikePen,
+                                spikeX + 5, wall.Y - 5,
+                                spikeX + 10, wall.Y
+                            );
+                        }
+                    }
+                }
             }
 
             // Draw HUD

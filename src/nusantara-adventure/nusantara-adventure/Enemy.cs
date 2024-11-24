@@ -51,6 +51,12 @@ namespace nusantara_adventure
             }
         }
 
+        public void ReverseDirection()
+        {
+            isMovingRight = !isMovingRight;
+            
+        }
+
         // Override the update method if you have one to call AutoMove
         public void Update()
         {
