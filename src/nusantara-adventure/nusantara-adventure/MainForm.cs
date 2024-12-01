@@ -25,6 +25,9 @@ namespace nusantara_adventure
             {
                 platformImage = Image.FromStream(ms);
             }
+
+            this.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+            this.UpdateStyles();
         }
         private void InitializeRestartButton()
         {
