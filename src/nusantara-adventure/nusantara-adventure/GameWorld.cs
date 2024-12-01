@@ -24,16 +24,18 @@ namespace nusantara_adventure
             Levels.Add(level);
         }
 
-        public void StartGame()
+        public void StartGame(int selectedLevel)
         {
-            Level level1 = new Level(1);
-            Level level2 = new Level(2);
+            Levels.Clear();
 
-            AddLevel(level1);
-            AddLevel(level2);
+            // Create levels with increasing difficulty
+            for (int i = 0; i < 5; i++)
+            {
+                Level level = new Level(i + 1);
+                Levels.Add(level);
+            }
 
-            CurrentLevelIndex = 0;
-
+            CurrentLevelIndex = selectedLevel;
             LoadCurrentLevel();
         }
 
@@ -41,7 +43,8 @@ namespace nusantara_adventure
             {
             // Random number of enemies between 4 and 5
             Random random = new Random();
-            int enemyCount = random.Next(4, 12);
+
+            int enemyCount = 4 + (level.LevelNumber * 2); // More enemies in higher levels
 
             // Enemy types to choose from
             string[] enemyTypes = {
@@ -79,27 +82,41 @@ namespace nusantara_adventure
             }
         }
 
-        private void GenerateDynamicTraps(Level level)
+         private void GenerateDynamicTraps(Level level)
         {
-            // Random number of traps between 2 and 4
             Random random = new Random();
-            int trapCount = random.Next(2, 5);
+            int trapCount = 2 + level.LevelNumber;
 
-            // Trap types to choose from (for example, spike traps, fire traps, etc.)
             string[] trapTypes = {
                 "Spikes", "Fire", "Pitfall"
             };
 
             for (int i = 0; i < trapCount; i++)
             {
-                // Randomly select trap type
                 string trapType = trapTypes[random.Next(trapTypes.Length)];
+                int x, damage, width, height;
+                bool isValidPosition;
 
-                // Dynamic trap attributes
-                int x = random.Next(300, 2000); 
-                        int damage = random.Next(10, 50);
-                        int width = random.Next(50, 150);  
-                        int height = 20;
+                do
+                {
+                    // Generate trap attributes
+                    x = random.Next(300, 2000);
+                    damage = random.Next(10, 50);
+                    width = random.Next(50, 150);
+                    height = 20;
+
+                    // Check for overlap with walls
+                    isValidPosition = true;
+                    foreach (var wall in level.Walls)
+                    {
+                        if ((x > wall.X && x < wall.X + wall.Width) ||
+                      (x + width < wall.X + wall.Width && x + width > wall.X))
+                          {
+                            isValidPosition = false;
+                            break;
+                        }
+                    }
+                } while (!isValidPosition); // Retry if the position is invalid
 
                 Trap trap = new Trap(
                     $"{trapType}{i + 1}",
@@ -116,7 +133,7 @@ namespace nusantara_adventure
         private void GenerateRandomWalls(Level level)
         {
             Random random = new Random();
-            int wallCount = random.Next(5, 15);
+           int wallCount = 5 + (level.LevelNumber * 2);
 
             const int MIN_WALL_SPACING = 200;
             int lastWallX = 300;
@@ -166,6 +183,7 @@ namespace nusantara_adventure
             GenerateDynamicEnemies(currentLevel);
             GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
+       
         }
 
         public void CompleteCurrentLevel()
@@ -398,5 +416,6 @@ namespace nusantara_adventure
         }
 
     }
+
 
 }
