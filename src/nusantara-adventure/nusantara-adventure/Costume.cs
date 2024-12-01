@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace nusantara_adventure
 {
-    internal class Costume
+    internal class Costume : GameObject
     {
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public Costume(string name, string description)
+        public Costume(string name, string description, int x, int y, int width, int height) : base("FinishLine", x, y, width, height)
         {
             Name = name;
             Description = description;

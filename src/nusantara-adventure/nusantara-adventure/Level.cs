@@ -14,7 +14,6 @@ namespace nusantara_adventure
         public List<Trap> Traps { get; set; }
         public bool IsCompleted { get; set; }
         public List<Wall> Walls { get; private set; } = new List<Wall>();
-
         public Level(int levelNumber)
         {
             LevelNumber = levelNumber;

@@ -35,7 +35,7 @@ namespace nusantara_adventure
                 X += Speed;
 
                 // If the enemy has moved 100 units from the starting position, stop moving
-                if (X >= initialX + 100)
+                if (X >= initialX + 10000)
                 {
                     isMovingRight = false;
                 }
@@ -44,7 +44,7 @@ namespace nusantara_adventure
             {
                 X-= Speed;
 
-                if (X <= initialX - 100)
+                if (X <= initialX - 10000)
                 {
                     isMovingRight = true;
                 }

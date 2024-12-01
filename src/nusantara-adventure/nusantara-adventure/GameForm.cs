@@ -65,7 +65,7 @@ namespace nusantara_adventure
 
             Player player = new Player("Justin", 0, 690, 100, 5, 32, 32);
             // Add some initial items or costumes if needed
-            player.AddCostume(new Costume("Default", "Starting costume"));
+            //player.AddCostume(new Costume("Default", "Starting costume"));
 
             gameWorld = new GameWorld(player);
 
@@ -178,17 +178,26 @@ namespace nusantara_adventure
             base.OnPaint(e);
             var g = e.Graphics;
             var player = gameWorld.Player;
+            var finishLine = gameWorld.FinishLine;
 
             // Draw Player
             //g.FillRectangle(Brushes.Blue, player.X - worldOffset, player.Y, player.Width, player.Height);
             player.Draw(g, worldOffset);
 
             var currentLevel = gameWorld.GetCurrentLevel();
+
+            g.FillRectangle(Brushes.Black, (1500 * currentLevel.LevelNumber) - worldOffset, 670, finishLine.Width, 50);
+            g.DrawString("FINISH", new Font("Arial", 10), Brushes.Black, (1500*currentLevel.LevelNumber) - worldOffset, 655);
+
             foreach (var enemy in currentLevel.Enemies)
             {
                 // Draw enemies relative to world offset
+                if(enemy.X < (1500 * currentLevel.LevelNumber))
+                {
+
                 g.FillRectangle(Brushes.Red, enemy.X - worldOffset, enemy.Y, enemy.Width, enemy.Height);
                 g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X - worldOffset, enemy.Y - 15);
+                }
             }
 
             foreach (var trap in currentLevel.Traps)
@@ -236,7 +245,8 @@ namespace nusantara_adventure
             // Draw HUD
             g.DrawString($"Health: {player.Health}", new Font("Arial", 12), Brushes.White, 10, 10);
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
-            g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 50);
+            g.DrawString($"Level: {currentLevel.LevelNumber}", new Font("Arial", 12), Brushes.White, 10, 50);
+            g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 70);
            
             g.DrawImage(
                 platformImage,

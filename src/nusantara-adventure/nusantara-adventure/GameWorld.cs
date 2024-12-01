@@ -10,6 +10,7 @@ namespace nusantara_adventure
     {
         public List<Level> Levels { get; set; }
         public Player Player { get; set; }
+        public Costume FinishLine { get; set; }
         public int CurrentLevelIndex { get; set; }
 
         public GameWorld(Player player)
@@ -17,6 +18,7 @@ namespace nusantara_adventure
             Player = player;
             Levels = new List<Level>();
             CurrentLevelIndex = 0;
+            FinishLine = new Costume("level1", "level 1 finish", 3000, 0, 50, 800);
         }
 
         public void AddLevel(Level level)
@@ -43,8 +45,9 @@ namespace nusantara_adventure
             {
             // Random number of enemies between 4 and 5
             Random random = new Random();
+            var currentLevel = GetCurrentLevel();
 
-            int enemyCount = 4 + (level.LevelNumber * 2); // More enemies in higher levels
+            int enemyCount = 5 * (currentLevel.LevelNumber); // More enemies in higher levels
 
             // Enemy types to choose from
             string[] enemyTypes = {
@@ -55,12 +58,14 @@ namespace nusantara_adventure
             {
                 // Randomly select enemy type
                 string enemyType = enemyTypes[random.Next(enemyTypes.Length)];
-
+                
+       
                 // Dynamic enemy attributes
-                int x = random.Next(200, 3000);  // Random x position
+                int x = random.Next(200, 1500*(currentLevel.LevelNumber));  // Random x position
                 int health = random.Next(20, 51);  // Random health between 20-50
                 int speed = random.Next(1, 4);  // Random speed between 1-3
-                int damage = random.Next(10, 31);  // Random damage between 10-30
+                //int damage = random.Next(10, 31);  // Random damage between 10-30
+                int damage = 0;
                 int defaultRight = random.Next(2);
                 int width = random.Next(32, 40);
                 int height = random.Next(32, 40);
@@ -85,7 +90,9 @@ namespace nusantara_adventure
          private void GenerateDynamicTraps(Level level)
         {
             Random random = new Random();
-            int trapCount = 2 + level.LevelNumber;
+            var currentLevel = GetCurrentLevel();
+
+            int trapCount = 2 + currentLevel.LevelNumber;
 
             string[] trapTypes = {
                 "Spikes", "Fire", "Pitfall"
@@ -100,8 +107,9 @@ namespace nusantara_adventure
                 do
                 {
                     // Generate trap attributes
-                    x = random.Next(300, 2000);
-                    damage = random.Next(10, 50);
+                    x = random.Next(300, 1500*currentLevel.LevelNumber);
+                    //damage = random.Next(10, 50);
+                    damage = 0;
                     width = random.Next(50, 150);
                     height = 20;
 
@@ -133,20 +141,25 @@ namespace nusantara_adventure
         private void GenerateRandomWalls(Level level)
         {
             Random random = new Random();
-           int wallCount = 5 + (level.LevelNumber * 2);
+            var currentLevel = GetCurrentLevel();
+
+            int wallCount = 5*(currentLevel.LevelNumber);
 
             const int MIN_WALL_SPACING = 200;
             int lastWallX = 300;
 
             for (int i = 0; i < wallCount; i++)
             {
-               
                 int width = random.Next(30, 60);
                 int height = random.Next(50, 100);
-
               
                 int x = lastWallX + MIN_WALL_SPACING + random.Next(100);
                 int y = 690 - height + 10 ;
+
+                if (x > currentLevel.LevelNumber*1500-200)
+                {
+                    break; 
+                }
 
                 // Randomly choose wall type
                 WallType wallType = (WallType)random.Next(Enum.GetValues(typeof(WallType)).Length);
@@ -168,6 +181,7 @@ namespace nusantara_adventure
         public void StartLevel(int index)
         {
             CurrentLevelIndex = index;
+                   
             LoadCurrentLevel();
         }
 
@@ -183,7 +197,8 @@ namespace nusantara_adventure
             GenerateDynamicEnemies(currentLevel);
             GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
-       
+            FinishLine.X = currentLevel.LevelNumber * 1500;
+               
         }
 
         public void CompleteCurrentLevel()
@@ -198,7 +213,6 @@ namespace nusantara_adventure
             }
         }
 
-
         public void Update()
         {
             var currentLevel = GetCurrentLevel();
@@ -211,12 +225,20 @@ namespace nusantara_adventure
             CheckWallCollisions(currentLevel);
             CheckEnemyWallCollisions(currentLevel);
             CheckTopCollisions(currentLevel);
+            CheckFinishLineCollision(currentLevel);
+
 
             // Remove defeated enemies
             currentLevel.Enemies.RemoveAll(e => e.Health <= 0);
             currentLevel.Items.RemoveAll(i => i.IsCollected);
         }
-
+        private void CheckFinishLineCollision(Level currentLevel)
+        {
+            if (IsColliding(Player, FinishLine))
+            {
+                CompleteCurrentLevel();
+            }
+        }
         private void CheckEnemyCollisions(Level currentLevel)
         {
             foreach (var enemy in currentLevel.Enemies.ToList())
@@ -381,7 +403,8 @@ namespace nusantara_adventure
                 // Apply damage if it's a spiked wall
                 if (wall.Type == WallType.Spiked)
                 {
-                    Player.TakeDamage(10);
+                    //Player.TakeDamage(10);
+                    Player.TakeDamage(0);
                 }
             }
             else if (!wasAboveWall) // Only handle horizontal collisions if we weren't above the wall

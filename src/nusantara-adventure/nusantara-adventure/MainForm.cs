@@ -7,7 +7,6 @@ namespace nusantara_adventure
         private Button[] levelButtons;
         private Button exitButton;
 
-
         public MainForm()
         {
             InitializeForm();
