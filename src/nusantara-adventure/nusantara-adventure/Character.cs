@@ -8,7 +8,8 @@ namespace nusantara_adventure
         public int Speed { get; set; }
         public Level CurrentLevel { get; set; }
         public float VerticalVelocity { get; set; }
-        public bool IsGrounded { get; protected set; }
+        public bool CharIsGrounded { get; set; }
+
         protected const float GRAVITY = 0.5f;
         protected const float JUMP_STRENGTH = -10f;
         protected const int GROUND_LEVEL = 700; // Adjust based on form height
@@ -18,7 +19,7 @@ namespace nusantara_adventure
         {
             Health = health;
             Speed = speed;
-            IsGrounded = false;
+            
         }
 
         public void Move(int deltaX, int deltaY)
@@ -59,26 +60,25 @@ namespace nusantara_adventure
             {
                 Y = GROUND_LEVEL - Height;
                 VerticalVelocity = 0;
-                IsGrounded = true;
+                CharIsGrounded = true;
             }
-            else
-            {
-                IsGrounded = false;
-            }
+  
         }
 
         protected virtual void Jump()
         {
-            if (IsGrounded)
+            if (CharIsGrounded)
             {
                 VerticalVelocity = JUMP_STRENGTH;
-                IsGrounded = false;
+                CharIsGrounded = false;
             }
         }
 
         public override void Update()
         {
+        
             ApplyGravity();
+            
         }
     }
 }

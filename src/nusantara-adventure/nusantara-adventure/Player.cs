@@ -21,7 +21,6 @@ namespace nusantara_adventure
         private int lastPlatformY;
 
         public bool IsGrounded;
-
         public int Score { get; set; }
         public Costume CurrentCostume { get; set; }
         public List<Costume> OwnedCostumes { get; set; }
@@ -30,10 +29,13 @@ namespace nusantara_adventure
             : base(name, x, y, health, speed, width, height)
         {
             OwnedCostumes = new List<Costume>();
+
             InitializeSprites();
             currentFrame = 0;
             currentRow = 0; // Default facing down
             isMoving = false;
+            IsGrounded = true;
+
             wasOnPlatform = false;
             UpdateSpriteRect();
         }
@@ -42,14 +44,15 @@ namespace nusantara_adventure
             // If we were on a platform but aren't anymore, start falling
             if (wasOnPlatform && !IsGrounded)
             {
-                VerticalVelocity = 0; // Start with no vertical velocity
+                VerticalVelocity = 0.5f; // Start with no vertical velocity
+                IsGrounded = false;
             }
 
             base.Update(); // Apply normal gravity
 
             // Update platform state
             wasOnPlatform = IsGrounded;
-            if (IsGrounded)
+            if (CharIsGrounded)
             {
                 lastPlatformY = Y + Height;
             }

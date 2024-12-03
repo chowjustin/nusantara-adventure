@@ -247,7 +247,9 @@ namespace nusantara_adventure
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
             g.DrawString($"Level: {currentLevel.LevelNumber}", new Font("Arial", 12), Brushes.White, 10, 50);
             g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 70);
-           
+            g.DrawString($"CharIsGrounded: {player.CharIsGrounded}", new Font("Arial", 12), Brushes.White, 10, 90);
+            g.DrawString($"IsGrounded: {player.IsGrounded}", new Font("Arial", 12), Brushes.White, 10, 110);
+
             g.DrawImage(
                 platformImage,
                 new Rectangle(0, 700, 1200, 100)

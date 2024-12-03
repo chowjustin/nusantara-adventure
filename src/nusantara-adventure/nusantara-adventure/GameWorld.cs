@@ -216,7 +216,11 @@ namespace nusantara_adventure
         public void Update()
         {
             var currentLevel = GetCurrentLevel();
-            Player.IsGrounded = IsOnAnyWall(currentLevel) || Player.Y + Player.Height >= 100;
+            Player.IsGrounded = (Player.Y + Player.Height >= 100) || IsOnAnyWall(currentLevel);
+
+
+            //Player.CharIsGrounded = (Player.Y + Player.Height >= 100);
+
 
             // Check for collisions and interactions
             CheckEnemyCollisions(currentLevel);
@@ -382,23 +386,24 @@ namespace nusantara_adventure
 
         private void HandleWallCollision(Wall wall)
         {
-            // Check if player is above the wall (platform collision)
-            bool isAboveWall = Player.Y + Player.Height <= wall.Y + 10 &&
-                              Player.Y + Player.Height >= wall.Y - 10 &&
-                              Player.X + Player.Width > wall.X &&
-                              Player.X < wall.X + wall.Width;
+            //// Check if player is above the wall (platform collision)
+            //bool isAboveWall = Player.Y + Player.Height <= wall.Y + 10 &&
+            //                  Player.Y + Player.Height >= wall.Y - 10 &&
+            //                  Player.X + Player.Width > wall.X &&
+            //                  Player.X < wall.X + wall.Width;
 
             // Check if player was previously on the wall
             bool wasAboveWall = Player.Y + Player.Height <= wall.Y &&
                                Player.X + Player.Width > wall.X &&
                                Player.X < wall.X + wall.Width;
 
-            if (isAboveWall)
+            if (IsTopCollision(Player, wall))
             {
                 // Place player on top of wall
                 Player.Y = wall.Y - Player.Height;
-                Player.VerticalVelocity = 0;
+                Player.CharIsGrounded = true;
                 Player.IsGrounded = true;
+                Player.VerticalVelocity = -0.5f;
 
                 // Apply damage if it's a spiked wall
                 if (wall.Type == WallType.Spiked)
@@ -407,6 +412,7 @@ namespace nusantara_adventure
                     Player.TakeDamage(0);
                 }
             }
+        
             else if (!wasAboveWall) // Only handle horizontal collisions if we weren't above the wall
             {
                 // Handle horizontal collisions
@@ -432,9 +438,18 @@ namespace nusantara_adventure
                                   Player.X + Player.Width > wall.X &&
                                   Player.X < wall.X + wall.Width;
 
+                bool wasAboveWall = Player.Y + Player.Height <= wall.Y &&
+                             Player.X + Player.Width > wall.X &&
+                             Player.X < wall.X + wall.Width;
+
                 if (isAboveWall)
                     return true;
+                if (wasAboveWall)
+                    return false;
             }
+
+            Player.CharIsGrounded = false;
+            Player.IsGrounded = false;
             return false;
         }
 
