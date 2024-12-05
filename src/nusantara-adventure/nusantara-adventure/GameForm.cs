@@ -12,10 +12,11 @@ namespace nusantara_adventure
         private int moveX = 0, moveY = 0;
         private bool jumpRequested = false;
         private Button restartButton;
+        private Button mainMenuButton;
         private int worldOffset = 0;
         private const int SCROLL_THRESHOLD = 600;
         private Image platformImage;
-
+        private bool gameCompleted = false;
 
         public GameForm(int level)
         {
@@ -23,6 +24,7 @@ namespace nusantara_adventure
             InitializeComponent();
             InitializeGame();
             InitializeRestartButton();
+            InitializeMainMenuButton();
 
             using (MemoryStream ms = new MemoryStream(Resource.platform))
             {
@@ -45,12 +47,38 @@ namespace nusantara_adventure
             this.Controls.Add(restartButton);
         }
 
+        private void InitializeMainMenuButton()
+        {
+            mainMenuButton = new Button
+            {
+                Text = "Main Menu",
+                Visible = false,
+                Location = new Point(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2 + 50),
+                Size = new Size(100, 30)
+            };
+            //this.DialogResult = DialogResult.OK; 
+            //this.Hide();
+            mainMenuButton.Click += ReturnToMainMenu;
+            this.Controls.Add(mainMenuButton);
+        }
+
+        private void ReturnToMainMenu(object sender, EventArgs e)
+        {
+            // Create and show the main form
+            MainForm mainForm = new MainForm();
+            mainForm.Show();
+
+            // Close the current game form
+            this.Close();
+        }
         private void RestartGame(object sender, EventArgs e)
         {
             this.Controls.Clear();
             worldOffset = 0;
             InitializeGame();
             InitializeRestartButton();
+            InitializeMainMenuButton();
+            gameCompleted = false;
             Invalidate();
         }
 
@@ -87,6 +115,12 @@ namespace nusantara_adventure
                 GameOver();
                 return;
             }
+            var currentLevel = gameWorld.GetCurrentLevel();
+            if (currentLevel.LevelNumber == 5 && gameWorld.Player.X >= gameWorld.FinishLine.X)
+            {
+                GameCompleted();
+                return;
+            }
 
             int verticalInput = 0;
             if (jumpRequested)
@@ -118,8 +152,6 @@ namespace nusantara_adventure
             gameWorld.Player.Animate();  // Add this line to update animation
             gameWorld.Player.Update();
 
-            Level currentLevel = gameWorld.GetCurrentLevel();
-
             foreach (var enemy in currentLevel.Enemies)
             {
                 enemy.Update();
@@ -137,6 +169,18 @@ namespace nusantara_adventure
 
             // Show restart button
             restartButton.Visible = true;
+
+            // Trigger a repaint to show final state
+            Invalidate();
+        }
+
+        public void GameCompleted()
+        {
+            gameTimer.Stop();
+
+            // Show restart button
+            mainMenuButton.Visible = true;
+            gameCompleted = true;
 
             // Trigger a repaint to show final state
             Invalidate();
@@ -274,6 +318,20 @@ namespace nusantara_adventure
                     this.ClientSize.Height / 2
                 );
             }
+
+            if (gameCompleted)
+            {
+                string gameCompletedText = "Game Completed!!";
+                SizeF textSize = g.MeasureString(gameCompletedText, new Font("Arial", 24, FontStyle.Bold));
+                g.DrawString(
+                    gameCompletedText,
+                    new Font("Arial", 24, FontStyle.Bold),
+                    Brushes.Red,
+                    (this.ClientSize.Width - textSize.Width) / 2,
+                    this.ClientSize.Height / 2
+                );
+            }
+
         }
 
 

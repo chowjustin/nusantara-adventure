@@ -185,6 +185,8 @@ namespace nusantara_adventure
             {
                 int width = random.Next(30, 60);
                 int height = random.Next(50, 100);
+
+                int spikedHeight = random.Next(40, 50);
               
                 int x = lastWallX + MIN_WALL_SPACING + random.Next(100);
                 int y = 690 - height + 10 ;
@@ -200,9 +202,9 @@ namespace nusantara_adventure
                 Wall wall = new Wall(
                     $"Wall{i + 1}",
                     x: x,
-                    y: y,
+                    y: wallType == WallType.Spiked ? 670 : y,
                     width: width,
-                    height: height,
+                    height: wallType == WallType.Spiked ? spikedHeight : height,
                     type: wallType
                 );
 
@@ -238,6 +240,13 @@ namespace nusantara_adventure
         {
             Levels[CurrentLevelIndex].CompleteLevel();
             CurrentLevelIndex++;
+
+            if (CurrentLevelIndex >= Levels.Count)
+            {
+                // Reset or handle game completion
+                CurrentLevelIndex = Levels.Count - 1; // Stay on last level
+                return;
+            }
 
             var currentLevel = GetCurrentLevel();
             // Load next level if available
