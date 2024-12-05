@@ -158,6 +158,12 @@ namespace nusantara_adventure
             }
         }
 
+        public void ResetEffect()
+        {
+            Health = 100;
+            Speed = 5;
+        }
+
         public void RemoveCostume(Costume costume)
         {
             OwnedCostumes.Remove(costume);

@@ -41,6 +41,39 @@ namespace nusantara_adventure
             LoadCurrentLevel();
         }
 
+        private void GenerateDynamicItems(Level level)
+        {
+            Random random = new Random();
+            var currentLevel = GetCurrentLevel();
+
+            int itemCount = 2;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                // Dynamic enemy attributes
+                int x = random.Next(200, 1500 * (currentLevel.LevelNumber));  // Random x position
+                int value = random.Next(1, 3);  // Random health between 20-50
+                int healthBoost = random.Next(20, 40);  // Random speed between 1-3
+                int speedBoost = random.Next(5, 7);  // Random damage between 10-30
+                //int damage = 0;
+                int width = random.Next(50, 60);
+
+                // Create and add enemy to level
+                Item item = new Item(
+                    "Power UP",
+                    x: x,
+                    y: 690,
+                    value: value,
+                    healthBoost: healthBoost,
+                    speedBoost: speedBoost,
+                    width: width,
+                    height: width
+                );
+
+                level.AddItem(item);
+            }
+        }
+
           private void GenerateDynamicEnemies(Level level)
             {
             // Random number of enemies between 4 and 5
@@ -64,8 +97,8 @@ namespace nusantara_adventure
                 int x = random.Next(200, 1500*(currentLevel.LevelNumber));  // Random x position
                 int health = random.Next(20, 51);  // Random health between 20-50
                 int speed = random.Next(1, 4);  // Random speed between 1-3
-                //int damage = random.Next(10, 31);  // Random damage between 10-30
-                int damage = 0;
+                int damage = random.Next(10, 31);  // Random damage between 10-30
+                //int damage = 0;
                 int defaultRight = random.Next(2);
                 int width = random.Next(32, 40);
                 int height = random.Next(32, 40);
@@ -108,8 +141,8 @@ namespace nusantara_adventure
                 {
                     // Generate trap attributes
                     x = random.Next(300, 1500*currentLevel.LevelNumber);
-                    //damage = random.Next(10, 50);
-                    damage = 0;
+                    damage = random.Next(10, 50);
+                    //damage = 0;
                     width = random.Next(50, 150);
                     height = 20;
 
@@ -197,8 +230,8 @@ namespace nusantara_adventure
             GenerateDynamicEnemies(currentLevel);
             GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
+            GenerateDynamicItems(currentLevel);
             FinishLine.X = currentLevel.LevelNumber * 1500;
-               
         }
 
         public void CompleteCurrentLevel()
@@ -206,9 +239,11 @@ namespace nusantara_adventure
             Levels[CurrentLevelIndex].CompleteLevel();
             CurrentLevelIndex++;
 
+            var currentLevel = GetCurrentLevel();
             // Load next level if available
             if (CurrentLevelIndex < Levels.Count)
             {
+                Player.ResetEffect();
                 LoadCurrentLevel();
             }
         }
