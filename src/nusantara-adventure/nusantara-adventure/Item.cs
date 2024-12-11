@@ -46,7 +46,7 @@ namespace nusantara_adventure
             System.Threading.Timer timer = null;
             timer = new System.Threading.Timer(_ =>
             {
-                player.Speed -= SpeedBoost;
+                player.Speed = 5;
 
                 // Dispose the timer after it has served its purpose
                 timer.Dispose();
