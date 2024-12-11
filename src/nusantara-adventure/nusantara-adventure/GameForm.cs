@@ -26,7 +26,7 @@ namespace nusantara_adventure
             InitializeRestartButton();
             InitializeMainMenuButton();
 
-            using (MemoryStream ms = new MemoryStream(Resource.platform))
+            using (MemoryStream ms = new MemoryStream(Resource.soil))
             {
                 platformImage = Image.FromStream(ms);
             }
@@ -89,7 +89,7 @@ namespace nusantara_adventure
             this.Size = new Size(1200, 800);
             this.MaximumSize = this.Size; // Prevent resizing
             this.MinimumSize = this.Size;
-            this.BackColor = Color.LightBlue;
+
 
             Player player = new Player("Justin", 0, 690, 100, 5, 32, 32);
             // Add some initial items or costumes if needed
@@ -219,8 +219,33 @@ namespace nusantara_adventure
         }     
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
             var g = e.Graphics;
+            var currentLevel = gameWorld.GetCurrentLevel();
+            var resourceName = $"bg{currentLevel.LevelNumber}";
+            if (currentLevel.LevelNumber > 2)
+            {
+                resourceName = "bg1";
+            }
+
+            using (MemoryStream ms = new MemoryStream((byte[])Resource.ResourceManager.GetObject(resourceName)))
+            {
+                Image backgroundImage = Image.FromStream(ms);
+                int backgroundWidth = backgroundImage.Width;
+                int numTiles = (this.ClientSize.Width / backgroundWidth) + 2; // +2 to ensure full coverage
+
+                for (int i = 0; i < numTiles; i++)
+                {
+                    // Calculate the x position, accounting for world offset
+                    int xPos = i * backgroundWidth - (worldOffset % backgroundWidth);
+
+                    g.DrawImage(backgroundImage,
+                        new Rectangle(xPos, 0, backgroundWidth, this.ClientSize.Height)
+                    );
+                }
+            }
+
+            base.OnPaint(e);
+       
             var player = gameWorld.Player;
             var finishLine = gameWorld.FinishLine;
 
@@ -228,20 +253,13 @@ namespace nusantara_adventure
             //g.FillRectangle(Brushes.Blue, player.X - worldOffset, player.Y, player.Width, player.Height);
             player.Draw(g, worldOffset);
 
-            var currentLevel = gameWorld.GetCurrentLevel();
 
             g.FillRectangle(Brushes.Black, (1500 * currentLevel.LevelNumber) - worldOffset, 670, finishLine.Width, 50);
             g.DrawString("FINISH", new Font("Arial", 10), Brushes.Black, (1500*currentLevel.LevelNumber) - worldOffset, 655);
 
             foreach (var enemy in currentLevel.Enemies)
             {
-                // Draw enemies relative to world offset
-                if(enemy.X < (1500 * currentLevel.LevelNumber))
-                {
-
-                g.FillRectangle(Brushes.Red, enemy.X - worldOffset, enemy.Y, enemy.Width, enemy.Height);
-                g.DrawString(enemy.Name, new Font("Arial", 10), Brushes.White, enemy.X - worldOffset, enemy.Y - 15);
-                }
+                enemy.Draw(g, worldOffset);
             }
 
             foreach (var trap in currentLevel.Traps)
@@ -253,43 +271,13 @@ namespace nusantara_adventure
 
             foreach (var item in currentLevel.Items)
             {
-                g.FillRectangle(Brushes.BlueViolet, item.X - worldOffset, item.Y, item.Width, item.Height);
-                g.DrawString(item.Name, new Font("Arial", 10), Brushes.White, item.X - worldOffset, item.Y - 15);
+                item.Draw(g, worldOffset);
+               
             }
 
             foreach (var wall in currentLevel.Walls)
             {
-                // Choose color based on wall type
-                Brush wallBrush = wall.Type switch
-                {
-                    WallType.Regular => Brushes.Gray,
-                    WallType.Spiked => Brushes.DarkRed,
-                    _ => Brushes.Gray
-                };
-
-                // Draw wall relative to world offset
-                g.FillRectangle(wallBrush, wall.X - worldOffset, wall.Y, wall.Width, wall.Height);
-
-                // Draw spikes for spiked walls
-                if (wall.Type == WallType.Spiked)
-                {
-                    using (Pen spikePen = new Pen(Color.Red, 2))
-                    {
-                        int spikeCount = wall.Width / 10;
-                        for (int i = 0; i < spikeCount; i++)
-                        {
-                            int spikeX = wall.X - worldOffset + (i * 10);
-                            g.DrawLine(spikePen,
-                                spikeX, wall.Y,
-                                spikeX + 5, wall.Y - 5
-                            );
-                            g.DrawLine(spikePen,
-                                spikeX + 5, wall.Y - 5,
-                                spikeX + 10, wall.Y
-                            );
-                        }
-                    }
-                }
+                wall.Draw(g, worldOffset);
             }
 
             // Draw HUD
@@ -300,10 +288,28 @@ namespace nusantara_adventure
             //g.DrawString($"CharIsGrounded: {player.CharIsGrounded}", new Font("Arial", 12), Brushes.White, 10, 90);
             //g.DrawString($"IsGrounded: {player.IsGrounded}", new Font("Arial", 12), Brushes.White, 10, 110);
 
-            g.DrawImage(
-                platformImage,
-                new Rectangle(0, 700, 1200, 100)
-            );
+            //g.DrawImage(
+            //    platformImage,
+            //    new Rectangle(0, 700, 1200, 100)
+            //);
+          
+
+            int platformWidth = platformImage.Width;
+            int numPlatformTiles = (this.ClientSize.Width / platformWidth) + 2;
+
+            // Adjust the parallax speed (you can tune this value)
+            // Dividing worldOffset by a larger number will make it move slower than the background
+            int platformOffset = worldOffset / 2;
+
+            for (int i = 0; i < numPlatformTiles; i++)
+            {
+                int xPos = i * platformWidth - (worldOffset % platformWidth);
+
+                g.DrawImage(
+                    platformImage,
+                    new Rectangle(xPos, 700, platformWidth, 100)
+                );
+            }
 
             // Game Over text if player health is 0
             if (player.Health <= 0)

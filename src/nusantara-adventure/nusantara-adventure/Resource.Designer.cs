@@ -63,6 +63,46 @@ namespace nusantara_adventure {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bg1 {
+            get {
+                object obj = ResourceManager.GetObject("bg1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bg2 {
+            get {
+                object obj = ResourceManager.GetObject("bg2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] enemy1 {
+            get {
+                object obj = ResourceManager.GetObject("enemy1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] foods {
+            get {
+                object obj = ResourceManager.GetObject("foods", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] platform {
             get {
                 object obj = ResourceManager.GetObject("platform", resourceCulture);
@@ -76,6 +116,26 @@ namespace nusantara_adventure {
         internal static byte[] rpg_sprite_walk {
             get {
                 object obj = ResourceManager.GetObject("rpg_sprite_walk", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] soil {
+            get {
+                object obj = ResourceManager.GetObject("soil", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] wall {
+            get {
+                object obj = ResourceManager.GetObject("wall", resourceCulture);
                 return ((byte[])(obj));
             }
         }

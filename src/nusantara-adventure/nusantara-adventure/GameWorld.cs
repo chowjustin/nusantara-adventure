@@ -46,7 +46,7 @@ namespace nusantara_adventure
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
-            int itemCount = 2;
+            int itemCount = currentLevel.LevelNumber;
 
             for (int i = 0; i < itemCount; i++)
             {
@@ -62,7 +62,7 @@ namespace nusantara_adventure
                 Item item = new Item(
                     "Power UP",
                     x: x,
-                    y: 690,
+                    y: 500,
                     value: value,
                     healthBoost: healthBoost,
                     speedBoost: speedBoost,
@@ -84,7 +84,7 @@ namespace nusantara_adventure
 
             // Enemy types to choose from
             string[] enemyTypes = {
-                "Goomba", "Koopa", "Piranha", "Hammer Bro", "Bowser Jr"
+                "enemy1", "enemy2", "enemy3"
             };
 
             for (int i = 0; i < enemyCount; i++)
@@ -100,8 +100,6 @@ namespace nusantara_adventure
                 int damage = random.Next(10, 31);  // Random damage between 10-30
                 //int damage = 0;
                 int defaultRight = random.Next(2);
-                int width = random.Next(32, 40);
-                int height = random.Next(32, 40);
 
                 // Create and add enemy to level
                 Enemy enemy = new Enemy(
@@ -112,8 +110,8 @@ namespace nusantara_adventure
                     speed: speed,
                     damage: damage,
                     defaultRight: defaultRight == 1,
-                    width: width,
-                    height: height
+                    width: 32,
+                    height: 32
                 );
 
                 level.AddEnemy(enemy);
@@ -177,7 +175,7 @@ namespace nusantara_adventure
             var currentLevel = GetCurrentLevel();
 
             int wallCount = 5*(currentLevel.LevelNumber);
-
+            
             const int MIN_WALL_SPACING = 200;
             int lastWallX = 300;
 
@@ -452,8 +450,8 @@ namespace nusantara_adventure
                 // Apply damage if it's a spiked wall
                 if (wall.Type == WallType.Spiked)
                 {
-                    //Player.TakeDamage(10);
-                    Player.TakeDamage(0);
+                    Player.TakeDamage(10);
+
                 }
             }
         
