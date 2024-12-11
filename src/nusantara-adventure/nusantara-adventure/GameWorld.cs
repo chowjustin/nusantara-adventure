@@ -234,6 +234,7 @@ namespace nusantara_adventure
             Player.X = 0;
             Player.Y = 690;
             Player.VerticalVelocity = 0;
+            Player.Speed = 5;
 
             GenerateDynamicEnemies(currentLevel);
             GenerateDynamicTraps(currentLevel);
