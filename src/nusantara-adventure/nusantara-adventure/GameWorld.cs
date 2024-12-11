@@ -48,21 +48,22 @@ namespace nusantara_adventure
 
             int itemCount = currentLevel.LevelNumber;
 
+            const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
+
             for (int i = 0; i < itemCount; i++)
             {
                 // Dynamic enemy attributes
-                int x = random.Next(200, 1500 * (currentLevel.LevelNumber));  // Random x position
+                int x = random.Next(START_BUFFER_ZONE, 1500 * (currentLevel.LevelNumber));  // Random x position
                 int value = random.Next(1, 3);  // Random health between 20-50
                 int healthBoost = random.Next(20, 40);  // Random speed between 1-3
                 int speedBoost = random.Next(5, 7);  // Random damage between 10-30
-                //int damage = 0;
                 int width = random.Next(50, 60);
 
                 // Create and add enemy to level
                 Item item = new Item(
                     "Power UP",
                     x: x,
-                    y: 500,
+                    y: 550,
                     value: value,
                     healthBoost: healthBoost,
                     speedBoost: speedBoost,
@@ -74,13 +75,15 @@ namespace nusantara_adventure
             }
         }
 
-          private void GenerateDynamicEnemies(Level level)
-            {
+        private void GenerateDynamicEnemies(Level level)
+        {
             // Random number of enemies between 4 and 5
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
             int enemyCount = 5 * (currentLevel.LevelNumber); // More enemies in higher levels
+
+            const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
 
             // Enemy types to choose from
             string[] enemyTypes = {
@@ -91,14 +94,12 @@ namespace nusantara_adventure
             {
                 // Randomly select enemy type
                 string enemyType = enemyTypes[random.Next(enemyTypes.Length)];
-                
-       
+
                 // Dynamic enemy attributes
-                int x = random.Next(200, 1500*(currentLevel.LevelNumber));  // Random x position
+                int x = random.Next(START_BUFFER_ZONE, 1500 * (currentLevel.LevelNumber));  // Random x position
                 int health = random.Next(20, 51);  // Random health between 20-50
                 int speed = random.Next(1, 4);  // Random speed between 1-3
                 int damage = random.Next(10, 31);  // Random damage between 10-30
-                //int damage = 0;
                 int defaultRight = random.Next(2);
 
                 // Create and add enemy to level
@@ -118,16 +119,18 @@ namespace nusantara_adventure
             }
         }
 
-         private void GenerateDynamicTraps(Level level)
+        private void GenerateDynamicTraps(Level level)
         {
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
             int trapCount = 2 + currentLevel.LevelNumber;
 
+            const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
+
             string[] trapTypes = {
-                "Spikes", "Fire", "Pitfall"
-            };
+        "Spikes", "Fire", "Pitfall"
+    };
 
             for (int i = 0; i < trapCount; i++)
             {
@@ -138,9 +141,8 @@ namespace nusantara_adventure
                 do
                 {
                     // Generate trap attributes
-                    x = random.Next(300, 1500*currentLevel.LevelNumber);
-                    damage = random.Next(10, 50);
-                    //damage = 0;
+                    x = random.Next(START_BUFFER_ZONE, 1500 * currentLevel.LevelNumber);
+                    damage = random.Next(10, 20);
                     width = random.Next(50, 150);
                     height = 20;
 
@@ -149,8 +151,8 @@ namespace nusantara_adventure
                     foreach (var wall in level.Walls)
                     {
                         if ((x > wall.X && x < wall.X + wall.Width) ||
-                      (x + width < wall.X + wall.Width && x + width > wall.X))
-                          {
+                            (x + width < wall.X + wall.Width && x + width > wall.X))
+                        {
                             isValidPosition = false;
                             break;
                         }
@@ -174,10 +176,12 @@ namespace nusantara_adventure
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
-            int wallCount = 5*(currentLevel.LevelNumber);
-            
+            int wallCount = 5 * (currentLevel.LevelNumber);
+
             const int MIN_WALL_SPACING = 200;
-            int lastWallX = 300;
+            const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
+
+            int lastWallX = START_BUFFER_ZONE;
 
             for (int i = 0; i < wallCount; i++)
             {
@@ -185,13 +189,13 @@ namespace nusantara_adventure
                 int height = random.Next(50, 100);
 
                 int spikedHeight = random.Next(40, 50);
-              
-                int x = lastWallX + MIN_WALL_SPACING + random.Next(100);
-                int y = 690 - height + 10 ;
 
-                if (x > currentLevel.LevelNumber*1500-200)
+                int x = lastWallX + MIN_WALL_SPACING + random.Next(100);
+                int y = 690 - height + 10;
+
+                if (x > currentLevel.LevelNumber * 1500 - 200)
                 {
-                    break; 
+                    break;
                 }
 
                 // Randomly choose wall type
@@ -214,7 +218,7 @@ namespace nusantara_adventure
         public void StartLevel(int index)
         {
             CurrentLevelIndex = index;
-                   
+
             LoadCurrentLevel();
         }
 
@@ -231,6 +235,10 @@ namespace nusantara_adventure
             GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
             GenerateDynamicItems(currentLevel);
+            Player.X = 0;
+            Player.Y = 690;
+
+            
             FinishLine.X = currentLevel.LevelNumber * 1500;
         }
 
@@ -258,13 +266,11 @@ namespace nusantara_adventure
         public void Update()
         {
             var currentLevel = GetCurrentLevel();
+
+            // Simplified grounded check
             Player.IsGrounded = (Player.Y + Player.Height >= 100) || IsOnAnyWall(currentLevel);
 
-
-            //Player.CharIsGrounded = (Player.Y + Player.Height >= 100);
-
-
-            // Check for collisions and interactions
+            // Rest of the update method remains the same
             CheckEnemyCollisions(currentLevel);
             CheckItemCollections(currentLevel);
             CheckTrapCollisions(currentLevel);
@@ -273,11 +279,11 @@ namespace nusantara_adventure
             CheckTopCollisions(currentLevel);
             CheckFinishLineCollision(currentLevel);
 
-
             // Remove defeated enemies
             currentLevel.Enemies.RemoveAll(e => e.Health <= 0);
             currentLevel.Items.RemoveAll(i => i.IsCollected);
         }
+
         private void CheckFinishLineCollision(Level currentLevel)
         {
             if (IsColliding(Player, FinishLine))
@@ -336,18 +342,18 @@ namespace nusantara_adventure
             }
             else
             {
-               
+
                 if (enemy.X + enemy.Width > wall.X && enemy.X < wall.X)
                 {
-                    
+
                     enemy.X = wall.X - enemy.Width;
-                    enemy.ReverseDirection(); 
+                    enemy.ReverseDirection();
                 }
                 else if (enemy.X < wall.X + wall.Width && enemy.X + enemy.Width > wall.X + wall.Width)
                 {
                     // Collision from right side
                     enemy.X = wall.X + wall.Width;
-                    enemy.ReverseDirection(); 
+                    enemy.ReverseDirection();
                 }
             }
         }
@@ -389,10 +395,10 @@ namespace nusantara_adventure
             {
                 if (IsTopCollision(Player, enemy))
                 {
-                    
+
                     enemy.TakeDamage(0);
-                   
-                
+
+
                     Player.IsGrounded = false;
                     currentLevel.Enemies.Remove(enemy);
                 }
@@ -400,19 +406,25 @@ namespace nusantara_adventure
             }
         }
 
-        private bool IsTopCollision(GameObject player, GameObject enemy)
+        private bool IsTopCollision(GameObject obj1, GameObject obj2)
         {
-            //Check if the player's bottom collides with the enemy's top
-            // Check if the player's bottom overlaps with the enemy's top
-            bool isVerticallyAligned = player.Y + player.Height >= enemy.Y &&
-                                       player.Y + player.Height <= enemy.Y + enemy.Height / 2;
+            // More precise top collision check for player-specific vertical velocity
+            bool isVerticallyAligned =
+                obj1.Y + obj1.Height >= obj2.Y &&
+                obj1.Y + obj1.Height <= obj2.Y + obj2.Height / 2;
 
-            // Check if the player and enemy horizontally overlap
-            bool isHorizontallyAligned = player.X < enemy.X + enemy.Width &&
-                                         player.X + player.Width > enemy.X;
+            // Check if objects are horizontally overlapping
+            bool isHorizontallyAligned =
+                obj1.X < obj2.X + obj2.Width &&
+                obj1.X + obj1.Width > obj2.X;
+
+            // For enemies and other objects, remove vertical velocity check
+            if (obj1 is Player player)
+            {
+                isVerticallyAligned &= player.VerticalVelocity >= 0;
+            }
 
             return isVerticallyAligned && isHorizontallyAligned;
-
         }
 
         private void CheckWallCollisions(Level currentLevel)
@@ -428,34 +440,32 @@ namespace nusantara_adventure
 
         private void HandleWallCollision(Wall wall)
         {
-            //// Check if player is above the wall (platform collision)
-            //bool isAboveWall = Player.Y + Player.Height <= wall.Y + 10 &&
-            //                  Player.Y + Player.Height >= wall.Y - 10 &&
-            //                  Player.X + Player.Width > wall.X &&
-            //                  Player.X < wall.X + wall.Width;
+            // More precise top collision check
+            bool isTopCollision = IsTopCollision(Player, wall);
 
-            // Check if player was previously on the wall
-            bool wasAboveWall = Player.Y + Player.Height <= wall.Y &&
-                               Player.X + Player.Width > wall.X &&
-                               Player.X < wall.X + wall.Width;
-
-            if (IsTopCollision(Player, wall))
+            if (isTopCollision)
             {
-                // Place player on top of wall
-                Player.Y = wall.Y - Player.Height;
-                Player.CharIsGrounded = true;
-                Player.IsGrounded = true;
-                Player.VerticalVelocity = -0.5f;
+                // Ensure player is fully or mostly over the wall
+                bool isFullyOverWall =
+                    Player.X + Player.Width > wall.X &&
+                    Player.X < wall.X + wall.Width;
 
-                // Apply damage if it's a spiked wall
-                if (wall.Type == WallType.Spiked)
+                if (isFullyOverWall)
                 {
-                    Player.TakeDamage(10);
+                    // Place player on top of wall
+                    Player.Y = wall.Y - Player.Height;
+                    Player.CharIsGrounded = true;
+                    Player.IsGrounded = true;
+                    Player.VerticalVelocity = -0.5f;
 
+                    // Apply damage if it's a spiked wall
+                    if (wall.Type == WallType.Spiked)
+                    {
+                        Player.TakeDamage(10);
+                    }
                 }
             }
-        
-            else if (!wasAboveWall) // Only handle horizontal collisions if we weren't above the wall
+            else
             {
                 // Handle horizontal collisions
                 if (Player.X + Player.Width > wall.X && Player.X < wall.X)
@@ -473,29 +483,28 @@ namespace nusantara_adventure
 
         private bool IsOnAnyWall(Level currentLevel)
         {
+            // Small tolerance to account for floating-point imprecision
+            const float tolerance = 0f;
+
             foreach (var wall in currentLevel.Walls)
             {
-                bool isAboveWall = Player.Y + Player.Height <= wall.Y + 10 &&
-                                  Player.Y + Player.Height >= wall.Y - 10 &&
-                                  Player.X + Player.Width > wall.X &&
-                                  Player.X < wall.X + wall.Width;
+                // Check if player is within horizontal bounds of the wall
+                bool horizontalOverlap =
+                    Player.X + Player.Width > wall.X &&
+                    Player.X < wall.X + wall.Width;
 
-                bool wasAboveWall = Player.Y + Player.Height <= wall.Y &&
-                             Player.X + Player.Width > wall.X &&
-                             Player.X < wall.X + wall.Width;
+                // Check if player is just touching or slightly above the wall surface
+                bool verticalCollision =
+                    Math.Abs((Player.Y + Player.Height) - wall.Y) <= tolerance &&
+                    Player.VerticalVelocity >= 0; // Only consider grounded when falling or at rest
 
-                if (isAboveWall)
+                if (horizontalOverlap && verticalCollision)
+                {
                     return true;
-                if (wasAboveWall)
-                    return false;
+                }
             }
 
-            Player.CharIsGrounded = false;
-            Player.IsGrounded = false;
             return false;
         }
-
     }
-
-
 }
