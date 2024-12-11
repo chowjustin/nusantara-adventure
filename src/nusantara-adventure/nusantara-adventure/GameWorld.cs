@@ -231,13 +231,14 @@ namespace nusantara_adventure
         {
             var currentLevel = Levels[CurrentLevelIndex];
 
+            Player.X = 0;
+            Player.Y = 690;
+            Player.VerticalVelocity = 0;
+
             GenerateDynamicEnemies(currentLevel);
             GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
             GenerateDynamicItems(currentLevel);
-            Player.X = 0;
-            Player.Y = 690;
-
             
             FinishLine.X = currentLevel.LevelNumber * 1500;
         }

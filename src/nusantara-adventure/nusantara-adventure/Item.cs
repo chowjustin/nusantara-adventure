@@ -43,9 +43,13 @@ namespace nusantara_adventure
         {
             player.Speed += SpeedBoost;
 
-            System.Threading.Timer timer = new System.Threading.Timer(_ =>
+            System.Threading.Timer timer = null;
+            timer = new System.Threading.Timer(_ =>
             {
                 player.Speed -= SpeedBoost;
+
+                // Dispose the timer after it has served its purpose
+                timer.Dispose();
             }, null, 3000, System.Threading.Timeout.Infinite);
         }
 
