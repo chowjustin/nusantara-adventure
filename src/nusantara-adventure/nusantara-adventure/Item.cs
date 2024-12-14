@@ -10,7 +10,6 @@ namespace nusantara_adventure
     {
         public int Value { get; set; }
         public int HealthBoost { get; set; }
-        public int SpeedBoost { get; set; }
         public bool IsCollected { get; set; }
 
         private Image foodImage;
@@ -24,7 +23,6 @@ namespace nusantara_adventure
         {
             Value = value;
             HealthBoost = healthBoost;
-            SpeedBoost = speedBoost;
 
             using (MemoryStream ms = new MemoryStream(Resource.foods))
             {
@@ -39,19 +37,7 @@ namespace nusantara_adventure
             foodFrameY = random.Next(0, 4) * frameHeight;
         }
 
-        public void ApplyEffect(Player player)
-        {
-            player.Speed += SpeedBoost;
-
-            System.Threading.Timer timer = null;
-            timer = new System.Threading.Timer(_ =>
-            {
-                player.Speed = 5;
-
-                // Dispose the timer after it has served its purpose
-                timer.Dispose();
-            }, null, 3000, System.Threading.Timeout.Infinite);
-        }
+      
 
         public void Draw(Graphics g, int worldOffset)
         {

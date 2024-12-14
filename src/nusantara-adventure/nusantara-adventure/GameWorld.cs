@@ -46,7 +46,7 @@ namespace nusantara_adventure
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
-            int itemCount = currentLevel.LevelNumber;
+            int itemCount = currentLevel.LevelNumber*5;
 
             const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
 
@@ -143,7 +143,7 @@ namespace nusantara_adventure
                     // Generate trap attributes
                     x = random.Next(START_BUFFER_ZONE, 1500 * currentLevel.LevelNumber);
                     damage = random.Next(10, 20);
-                    width = random.Next(50, 150);
+                    width = random.Next(50, 100);
                     height = 20;
 
                     // Check for overlap with walls and existing traps
@@ -266,8 +266,8 @@ namespace nusantara_adventure
             Player.Speed = 5;
 
             GenerateDynamicEnemies(currentLevel);
-            GenerateDynamicTraps(currentLevel);
             GenerateRandomWalls(currentLevel);
+            GenerateDynamicTraps(currentLevel);
             GenerateDynamicItems(currentLevel);
             
             FinishLine.X = currentLevel.LevelNumber * 1500;

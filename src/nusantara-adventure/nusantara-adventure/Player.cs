@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 
 namespace nusantara_adventure
 {
     internal class Player : Character
     {
         // Sprite animation properties
-        private const int TOTAL_FRAMES = 8;
+        private const int TOTAL_FRAMES = 7;
         private const int SPRITE_ROWS = 4;
         private Image spriteSheet;
         private int currentFrame;
@@ -21,9 +22,13 @@ namespace nusantara_adventure
         private int lastPlatformY;
 
         public bool IsGrounded;
+        public bool isBoosted = false;
         public int Score { get; set; }
         public Costume CurrentCostume { get; set; }
         public List<Costume> OwnedCostumes { get; set; }
+
+        private System.Threading.Timer boostTimer;
+        public DateTime boostEndTime;
 
         public Player(string name, int x, int y, int health, int speed, int width, int height)
             : base(name, x, y, health, speed, width, height)
@@ -60,7 +65,7 @@ namespace nusantara_adventure
 
         private void InitializeSprites()
         {
-            using (MemoryStream ms = new MemoryStream(Resource.rpg_sprite_walk))
+            using (MemoryStream ms = new MemoryStream(Resource.batik_sprite))
             {
                 spriteSheet = Image.FromStream(ms);
             }
@@ -88,10 +93,16 @@ namespace nusantara_adventure
                 // Draw the current frame at the player's position
                 g.DrawImage(
                     spriteSheet,
-                    new Rectangle(X - worldOffset, Y-18 , 50, 50),  // Destination rectangle
+                    new Rectangle(X - worldOffset, Y-28 , 50, 60),  // Destination rectangle
                     spriteRect,                                        // Source rectangle
                     GraphicsUnit.Pixel
                 );
+            }
+
+            if (isBoosted)
+            {
+                int remainingTime = (int)Math.Max((boostEndTime - DateTime.Now).TotalSeconds, 0); // Ensure non-negative
+                g.DrawString($"Boost Time: {remainingTime}s", new Font("Arial", 12), Brushes.White, 10, 70);
             }
         }
 
@@ -115,13 +126,13 @@ namespace nusantara_adventure
 
             // Update sprite direction based on movement
             if (horizontalInput > 0)
-                currentRow = 3;      // Right
+                currentRow = 1;      // Right
             else if (horizontalInput < 0)
                 currentRow = 2;      // Left
-            else if (verticalInput < 0)
-                currentRow = 1;      // Up
-            else if (verticalInput > 0)
-                currentRow = 0;      // Down
+            else if (horizontalInput > 0 && !IsGrounded)
+                currentRow = 0;      // Up
+            else if (horizontalInput < 0 && !IsGrounded)
+                currentRow = 3;      // Down
 
             // Horizontal movement
             X += horizontalInput * Speed;
@@ -142,7 +153,40 @@ namespace nusantara_adventure
         public void CollectItem(Item item)
         {
             Score += item.Value;
-            item.ApplyEffect(this);
+            if (!isBoosted)
+            {
+                Speed += 5;
+                isBoosted = true;
+            }
+
+            if (boostEndTime > DateTime.Now)
+            {
+                // If there is remaining time, add 2 seconds to the current boostEndTime
+                boostEndTime = boostEndTime.AddMilliseconds(2000);
+            }
+            else
+            {
+                // If the boost has already expired, start a fresh 2 seconds from now
+                boostEndTime = DateTime.Now.AddMilliseconds(2000);
+            }
+
+            // Reset or start the timer
+            if (boostTimer == null)
+            {
+                boostTimer = new System.Threading.Timer(_ =>
+                {
+                    // Check if the current time is past the boost end time
+                    if (DateTime.Now >= boostEndTime)
+                    {
+                        Speed = 5;
+                        isBoosted = false;
+
+                        // Dispose the timer
+                        boostTimer.Dispose();
+                        boostTimer = null;
+                    }
+                }, null, 0, 100); // Check every 100 ms
+            }
         }
 
         public void AddCostume(Costume costume)

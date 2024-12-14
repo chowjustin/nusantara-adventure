@@ -65,7 +65,7 @@ namespace nusantara_adventure
   
         }
 
-        protected virtual void Jump()
+        public void Jump()
         {
             if (CharIsGrounded)
             {

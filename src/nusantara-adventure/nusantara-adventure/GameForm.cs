@@ -231,10 +231,7 @@ namespace nusantara_adventure
             var g = e.Graphics;
             var currentLevel = gameWorld.GetCurrentLevel();
             var resourceName = $"bg{currentLevel.LevelNumber}";
-            if (currentLevel.LevelNumber > 2)
-            {
-                resourceName = "bg1";
-            }
+ 
 
             using (MemoryStream ms = new MemoryStream((byte[])Resource.ResourceManager.GetObject(resourceName)))
             {
@@ -273,9 +270,10 @@ namespace nusantara_adventure
 
             foreach (var trap in currentLevel.Traps)
             {
-                // Draw traps relative to world offset
-                g.FillRectangle(Brushes.Yellow, trap.X - worldOffset, trap.Y, trap.Width, trap.Height);
-                g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X - worldOffset, trap.Y - 15);
+                trap.Draw(g, worldOffset);
+                //// Draw traps relative to world offset
+                //g.FillRectangle(Brushes.Yellow, trap.X - worldOffset, trap.Y, trap.Width, trap.Height);
+                //g.DrawString(trap.Name, new Font("Arial", 10), Brushes.White, trap.X - worldOffset, trap.Y - 15);
             }
 
             foreach (var item in currentLevel.Items)
@@ -293,8 +291,8 @@ namespace nusantara_adventure
             g.DrawString($"Health: {player.Health}", new Font("Arial", 12), Brushes.White, 10, 10);
             g.DrawString($"Score: {player.Score}", new Font("Arial", 12), Brushes.White, 10, 30);
             g.DrawString($"Level: {currentLevel.LevelNumber}", new Font("Arial", 12), Brushes.White, 10, 50);
-            g.DrawString($"Costume: {player.CurrentCostume?.Name ?? "None"}", new Font("Arial", 12), Brushes.White, 10, 70);
-            g.DrawString($"Speed: {player.Speed}", new Font("Arial", 12), Brushes.White, 10, 90);
+            //g.DrawString($"Duration: {player.boostEndTime}", new Font("Arial", 12), Brushes.White, 10, 70);
+            g.DrawString($"Speed: {player.isBoosted}", new Font("Arial", 12), Brushes.White, 10, 90);
             //g.DrawString($"playerScreenPosition: {playerScreenPosition}", new Font("Arial", 12), Brushes.White, 10, 110);
 
             //g.DrawImage(
