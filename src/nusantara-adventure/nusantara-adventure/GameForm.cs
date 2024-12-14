@@ -73,8 +73,12 @@ namespace nusantara_adventure
         }
         private void RestartGame(object sender, EventArgs e)
         {
+            int currentLevelNumber = gameWorld.GetCurrentLevel().LevelNumber;
+
             this.Controls.Clear();
             worldOffset = 0;
+
+            selectedLevel = currentLevelNumber - 1;
             InitializeGame();
             InitializeRestartButton();
             InitializeMainMenuButton();
