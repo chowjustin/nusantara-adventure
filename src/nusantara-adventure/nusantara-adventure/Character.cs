@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Media;
 namespace nusantara_adventure
 {
     internal class Character : GameObject
@@ -13,6 +14,7 @@ namespace nusantara_adventure
         protected const float GRAVITY = 0.5f;
         protected const float JUMP_STRENGTH = -10f;
         protected const int GROUND_LEVEL = 700; // Adjust based on form height
+        protected SoundPlayer _jumpSound;
 
         public Character(string name, int x, int y, int health, int speed, int width, int height)
             : base(name, x, y, width, height)
@@ -20,6 +22,12 @@ namespace nusantara_adventure
             Health = health;
             Speed = speed;
             
+        }
+
+
+        public void SetJumpSound(SoundPlayer jumpSound)
+        {
+            _jumpSound = jumpSound;
         }
 
         public void Move(int deltaX, int deltaY)
@@ -68,7 +76,8 @@ namespace nusantara_adventure
         public void Jump()
         {
             if (CharIsGrounded)
-            {
+            { 
+                _jumpSound.Play();
                 VerticalVelocity = JUMP_STRENGTH;
                 CharIsGrounded = false;
             }

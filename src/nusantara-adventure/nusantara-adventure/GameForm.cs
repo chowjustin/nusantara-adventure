@@ -19,7 +19,7 @@ namespace nusantara_adventure
         private Image platformImage;
         private bool gameCompleted = false;
         private SoundPlayer _deadSound;
-        private SoundPlayer _jumpSound;
+        public SoundPlayer _jumpSound;
         public GameForm(int level)
         {
             selectedLevel = level;
@@ -40,6 +40,8 @@ namespace nusantara_adventure
 
             _deadSound.Load();
             _jumpSound.Load();
+
+            gameWorld.Player.SetJumpSound(_jumpSound);
 
             this.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
             this.UpdateStyles();
@@ -212,7 +214,6 @@ namespace nusantara_adventure
             {
                 case Keys.W:
                 case Keys.Space:
-                    _jumpSound.Play();
                     jumpRequested = true;
                     break;
                 case Keys.S: moveY = 1; break;
