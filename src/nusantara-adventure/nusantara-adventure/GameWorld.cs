@@ -146,12 +146,22 @@ namespace nusantara_adventure
                     width = random.Next(50, 150);
                     height = 20;
 
-                    // Check for overlap with walls
+                    // Check for overlap with walls and existing traps
                     isValidPosition = true;
                     foreach (var wall in level.Walls)
                     {
-                        if ((x > wall.X && x < wall.X + wall.Width) ||
-                            (x + width < wall.X + wall.Width && x + width > wall.X))
+                        // Check if trap overlaps with wall horizontally
+                        if (x < wall.X + wall.Width && x + width > wall.X)
+                        {
+                            isValidPosition = false;
+                            break;
+                        }
+                    }
+
+                    // Additional check to prevent traps from overlapping with existing traps
+                    foreach (var existingTrap in level.Traps)
+                    {
+                        if (x < existingTrap.X + existingTrap.Width && x + width > existingTrap.X)
                         {
                             isValidPosition = false;
                             break;
@@ -171,6 +181,7 @@ namespace nusantara_adventure
                 level.AddTrap(trap);
             }
         }
+
         private void GenerateRandomWalls(Level level)
         {
             Random random = new Random();
@@ -196,6 +207,24 @@ namespace nusantara_adventure
                 if (x > currentLevel.LevelNumber * 1500 - 200)
                 {
                     break;
+                }
+
+                // Check for overlap with traps
+                bool isValidPosition = true;
+                foreach (var trap in level.Traps)
+                {
+                    // Check if wall overlaps with trap horizontally
+                    if (x < trap.X + trap.Width && x + width > trap.X)
+                    {
+                        isValidPosition = false;
+                        break;
+                    }
+                }
+
+                // If position is not valid, skip this wall
+                if (!isValidPosition)
+                {
+                    continue;
                 }
 
                 // Randomly choose wall type
