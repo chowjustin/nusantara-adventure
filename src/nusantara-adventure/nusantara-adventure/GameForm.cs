@@ -1,4 +1,5 @@
 using System;
+using System.Media;
 using nusantara_adventure;
 using static nusantara_adventure.Wall;
 
@@ -17,7 +18,8 @@ namespace nusantara_adventure
         private const int SCROLL_THRESHOLD = 600;
         private Image platformImage;
         private bool gameCompleted = false;
-
+        private SoundPlayer _deadSound;
+        private SoundPlayer _jumpSound;
         public GameForm(int level)
         {
             selectedLevel = level;
@@ -30,6 +32,14 @@ namespace nusantara_adventure
             {
                 platformImage = Image.FromStream(ms);
             }
+
+            var soundStream = new System.IO.MemoryStream(Resource.dead);
+            _deadSound = new SoundPlayer(soundStream); 
+            var jumpSound = new System.IO.MemoryStream(Resource.jump);
+            _jumpSound = new SoundPlayer(jumpSound);
+
+            _deadSound.Load();
+            _jumpSound.Load();
 
             this.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
             this.UpdateStyles();
@@ -116,6 +126,7 @@ namespace nusantara_adventure
             // Check for game over condition
             if (gameWorld.Player.Health <= 0)
             {
+                _deadSound.Play();
                 GameOver();
                 return;
             }
@@ -201,6 +212,7 @@ namespace nusantara_adventure
             {
                 case Keys.W:
                 case Keys.Space:
+                    _jumpSound.Play();
                     jumpRequested = true;
                     break;
                 case Keys.S: moveY = 1; break;

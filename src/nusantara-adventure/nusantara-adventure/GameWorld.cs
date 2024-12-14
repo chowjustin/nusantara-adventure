@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using static nusantara_adventure.Wall;
 
 namespace nusantara_adventure
@@ -13,12 +14,17 @@ namespace nusantara_adventure
         public Costume FinishLine { get; set; }
         public int CurrentLevelIndex { get; set; }
 
+        public SoundPlayer _eatSound;
         public GameWorld(Player player)
         {
             Player = player;
             Levels = new List<Level>();
             CurrentLevelIndex = 0;
             FinishLine = new Costume("level1", "level 1 finish", 3000, 0, 50, 800);
+
+            var soundStream = new System.IO.MemoryStream(Resource.eat);
+            _eatSound = new SoundPlayer(soundStream);
+            _eatSound.Load();
         }
 
         public void AddLevel(Level level)
@@ -46,7 +52,7 @@ namespace nusantara_adventure
             Random random = new Random();
             var currentLevel = GetCurrentLevel();
 
-            int itemCount = currentLevel.LevelNumber*5;
+            int itemCount = currentLevel.LevelNumber;
 
             const int START_BUFFER_ZONE = 300; // Minimum distance from the start of the level
 
@@ -265,6 +271,7 @@ namespace nusantara_adventure
             Player.VerticalVelocity = 0;
             Player.Speed = 5;
 
+
             GenerateDynamicEnemies(currentLevel);
             GenerateRandomWalls(currentLevel);
             GenerateDynamicTraps(currentLevel);
@@ -395,6 +402,7 @@ namespace nusantara_adventure
             {
                 if (IsColliding(Player, item) && !item.IsCollected)
                 {
+                    _eatSound.Play();
                     Player.CollectItem(item);
                     item.IsCollected = true;
                 }

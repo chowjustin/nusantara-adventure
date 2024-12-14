@@ -123,6 +123,36 @@ namespace nusantara_adventure {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bgform {
+            get {
+                object obj = ResourceManager.GetObject("bgform", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] dead {
+            get {
+                object obj = ResourceManager.GetObject("dead", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] eat {
+            get {
+                object obj = ResourceManager.GetObject("eat", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] enemy1 {
             get {
                 object obj = ResourceManager.GetObject("enemy1", resourceCulture);
@@ -136,6 +166,16 @@ namespace nusantara_adventure {
         internal static byte[] foods {
             get {
                 object obj = ResourceManager.GetObject("foods", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] jump {
+            get {
+                object obj = ResourceManager.GetObject("jump", resourceCulture);
                 return ((byte[])(obj));
             }
         }
