@@ -2,11 +2,11 @@
 
 namespace nusantara_adventure
 {
-    internal class Enemy : Character
+    internal class Enemy : Character, IDrawable
     {
         public int Damage { get; set; }
         private int initialX;
-        private bool isMovingRight = true;  // Direction flag for horizontal movement
+        private bool isMovingRight = true;
 
         private Image spriteSheet;
         private int currentFrame;
@@ -20,7 +20,7 @@ namespace nusantara_adventure
             : base(name, x, y, health, speed, width, height)
         {
             Damage = damage;
-            initialX = x; // Store the original X position
+            initialX = x; 
             isMovingRight = defaultRight;
 
             InitializeSprites();
@@ -41,12 +41,6 @@ namespace nusantara_adventure
         {
             player.TakeDamage(Damage);
         }
-
-        public override void Die()
-        {
-            // Custom death logic for enemy
-        }
-
         private void InitializeSprites()
         {
             using (MemoryStream ms = new MemoryStream(Resource.enemy1))
@@ -74,49 +68,43 @@ namespace nusantara_adventure
                 int frameWidth = spriteSheet.Width / TOTAL_FRAMES;
                 int frameHeight = spriteSheet.Height / SPRITE_ROWS;
 
-                // Draw the current frame at the player's position
                 g.DrawImage(
                     spriteSheet,
-                    new Rectangle(X - worldOffset, Y - 18, 50, 50),  // Destination rectangle
-                    spriteRect,                                        // Source rectangle
+                    new Rectangle(X - worldOffset, Y - 18, 50, 50), 
+                    spriteRect,                       
                     GraphicsUnit.Pixel
                 );
             }
         }
 
-        // Method to automatically move the enemy
-        public void AutoMove()
+        private void AutoMove()
         {
-            // Set moving state based on horizontal movement
             bool wasMoving = isMoving;
             isMoving = true;
 
             if (isMovingRight)
             {
-                // Move to the right
                 X += Speed;
-                currentRow = 0;  // Right-facing row
+                currentRow = 0; 
 
-                // If the enemy has moved 100 units from the starting position, stop moving
                 if (X >= initialX + 10000)
                 {
                     isMovingRight = false;
-                    currentRow = 1;  // Left-facing row
+                    currentRow = 1;
                 }
             }
             else
             {
                 X -= Speed;
-                currentRow = 1;  // Left-facing row
+                currentRow = 1;
 
                 if (X <= initialX - 10000)
                 {
                     isMovingRight = true;
-                    currentRow = 0;  // Right-facing row
+                    currentRow = 0; 
                 }
             }
 
-            // Animate - similar to Player class logic
             if (isMoving)
             {
                 currentFrame = (currentFrame + 1) % TOTAL_FRAMES;
@@ -134,13 +122,10 @@ namespace nusantara_adventure
             isMovingRight = !isMovingRight;
         }
 
-        // Override the update method if you have one to call AutoMove
-        public void Update()
+        public override void Update()
         {
-
             ApplyGravity();
-            AutoMove();  // This should be called in the main game loop or update cycle
-     
+            AutoMove();  
         }
     }
 }

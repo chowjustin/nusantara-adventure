@@ -1,14 +1,13 @@
-﻿
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+﻿using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace nusantara_adventure
 {
     public class MainForm : Form
     {
-        private Button[] levelButtons;
-        private Button exitButton;
+        private Button[] _levelButtons;
+        private Button _exitButton;
         private Image _bgImage;
+        private const int TOTAL_LEVEL = 5;
 
         public MainForm()
         {
@@ -21,26 +20,30 @@ namespace nusantara_adventure
             this.Text = "Main Menu";
             this.Size = new Size(1200, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
+            
+            InitializeBackground();
+            this.Paint += MainForm_Paint;
+        }
 
+        private void InitializeBackground()
+        {
             using (MemoryStream ms = new MemoryStream(Resource.bgform))
             {
                 _bgImage = Image.FromStream(ms);
             }
 
             this.DoubleBuffered = true;
-
-            this.Paint += MainForm_Paint;
         }
 
         private void InitializeControls()
         {
-            levelButtons = new Button[5];
+            _levelButtons = new Button[TOTAL_LEVEL];
 
             int xPos = (this.ClientSize.Width - 100) / 2;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < TOTAL_LEVEL; i++)
             {
-                levelButtons[i] = new Button
+                _levelButtons[i] = new Button
                 {
                     Text = $"Level {i + 1}",
                     Location = new Point(xPos, 120 + (i * 60)),
@@ -50,32 +53,30 @@ namespace nusantara_adventure
                     FlatStyle = FlatStyle.Flat,
                 };
 
-                levelButtons[i].FlatAppearance.BorderColor = Color.Black;
-                levelButtons[i].FlatAppearance.BorderSize = 3;
+                _levelButtons[i].FlatAppearance.BorderColor = Color.Black;
+                _levelButtons[i].FlatAppearance.BorderSize = 3;
 
+                int levelIndex = i;
+                _levelButtons[i].Click += (sender, e) => StartSelectedLevel(levelIndex);
 
-                int levelIndex = i; // Capture the current level in the closure
-                levelButtons[i].Click += (sender, e) => StartSelectedLevel(levelIndex);
-
-                this.Controls.Add(levelButtons[i]);
+                this.Controls.Add(_levelButtons[i]);
             }
 
-            exitButton = new Button
+            _exitButton = new Button
             {
                 Text = "Exit",
-                Location = new Point(xPos, 120 + (5 * 60)),
+                Location = new Point(xPos, 120 + (TOTAL_LEVEL * 60)),
                 Size = new Size(100, 40),
                 BackColor = Color.Black,
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
             };
 
-            exitButton.FlatAppearance.BorderColor = Color.White;
-            exitButton.FlatAppearance.BorderSize = 3;
+            _exitButton.FlatAppearance.BorderColor = Color.White;
+            _exitButton.FlatAppearance.BorderSize = 3;
+            _exitButton.Click += ExitButton_Click;
 
-            exitButton.Click += ExitButton_Click;
-
-            this.Controls.Add(exitButton);
+            this.Controls.Add(_exitButton);
         }
 
         private void StartSelectedLevel(int levelIndex)
@@ -92,26 +93,19 @@ namespace nusantara_adventure
         }
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
-        {
-            // Draw the background image
-          
+        {          
             e.Graphics.DrawImage(_bgImage, new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height));
 
             string text = "Choose The Level To Play";
             Font font = new Font("Poppins Semibold", 20);
 
-            // Measure the string width
             SizeF textSize = e.Graphics.MeasureString(text, font);
-
-            // Calculate the X position to center the string
             float xPos = (this.ClientSize.Width - textSize.Width) / 2;
 
-            // Draw the string at the calculated position (top-center)
             e.Graphics.DrawString(text, font, Brushes.Gold, xPos, 50);
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
         }
-
     }
 }

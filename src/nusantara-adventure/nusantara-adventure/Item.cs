@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace nusantara_adventure
 {
-    internal class Item : GameObject
+    internal class Item : GameObject, IDrawable
     {
         public int Value { get; set; }
         public int HealthBoost { get; set; }
@@ -29,7 +29,6 @@ namespace nusantara_adventure
                 foodImage = Image.FromStream(ms);
             }
 
-            // Select random frame when item is created
             frameWidth = foodImage.Width / 3;
             frameHeight = foodImage.Height / 4;
             Random random = new Random();
@@ -37,11 +36,8 @@ namespace nusantara_adventure
             foodFrameY = random.Next(0, 4) * frameHeight;
         }
 
-      
-
         public void Draw(Graphics g, int worldOffset)
         {
-            // Draw the current frame at the player's position
             g.DrawImage(
                 foodImage,
                 new Rectangle(X - worldOffset, Y - 18, 50, 50), 

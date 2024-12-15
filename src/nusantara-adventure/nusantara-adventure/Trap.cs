@@ -7,7 +7,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace nusantara_adventure
 {
-    internal class Trap : GameObject
+    internal class Trap : GameObject, IDrawable
     {
         public int Damage { get; set; }
         private Image spikeImage;
@@ -30,7 +30,6 @@ namespace nusantara_adventure
 
         public void Draw(Graphics g, int worldOffset)
         {
-            // Draw the current frame at the player's position
             g.DrawImage(
                 spikeImage,
                 new Rectangle(X - worldOffset, Y-8, Width, Height)
