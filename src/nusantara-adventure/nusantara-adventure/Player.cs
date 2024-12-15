@@ -99,7 +99,7 @@ namespace nusantara_adventure
             if (isBoosted)
             {
                 int remainingTime = (int)Math.Max((boostEndTime - DateTime.Now).TotalSeconds, 0);
-                g.DrawString($"Boost Time: {remainingTime}s", new Font("Arial", 12), Brushes.White, 10, 70);
+                g.DrawString($"Boost Time: {remainingTime}s", new Font("Arial", 12), Brushes.White, 10, 50);
             }
         }
 

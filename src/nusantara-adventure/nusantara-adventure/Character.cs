@@ -15,6 +15,8 @@ namespace nusantara_adventure
         protected const float JUMP_STRENGTH = -10f;
         protected const int GROUND_LEVEL = 700;
 
+        protected SoundPlayer _jumpSound;
+
         public Character(string name, int x, int y, int health, int speed, int width, int height)
             : base(name, x, y, width, height)
         {
@@ -22,7 +24,10 @@ namespace nusantara_adventure
             Speed = speed;
             
         }
-
+        public void SetJumpSound(SoundPlayer jumpSound)
+        {
+            _jumpSound = jumpSound;
+        }
         public void TakeDamage(int damage)
         {
             Health -= damage;
