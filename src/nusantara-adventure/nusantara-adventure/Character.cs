@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Media;
 namespace nusantara_adventure
 {
     internal abstract class Character : GameObject
@@ -54,7 +55,8 @@ namespace nusantara_adventure
         protected void Jump()
         {
             if (CharIsGrounded)
-            {
+            { 
+                _jumpSound.Play();
                 VerticalVelocity = JUMP_STRENGTH;
                 CharIsGrounded = false;
             }

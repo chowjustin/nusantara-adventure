@@ -45,6 +45,8 @@ namespace nusantara_adventure
             _deadSound.Load();
             _jumpSound.Load();
 
+            gameWorld.Player.SetJumpSound(_jumpSound);
+
             this.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
             this.UpdateStyles();
         }
@@ -195,7 +197,6 @@ namespace nusantara_adventure
             {
                 case Keys.W:
                 case Keys.Space:
-                    _jumpSound.Play();
                     jumpRequested = true;
                     break;
                 case Keys.S: moveY = 1; break;
