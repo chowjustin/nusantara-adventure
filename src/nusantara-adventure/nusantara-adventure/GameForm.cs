@@ -93,6 +93,7 @@ namespace nusantara_adventure
             InitializeGame();
             InitializeRestartButton();
             InitializeMainMenuButton();
+            InitializeResources();
             gameCompleted = false;
             Invalidate();
         }
